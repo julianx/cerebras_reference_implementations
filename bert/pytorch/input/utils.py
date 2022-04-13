@@ -321,7 +321,7 @@ def convert_to_unicode(text):
     """
 
     Converts `text` to unicode, assuming utf-8 input.
-    Returns text encoded in a way suitable for print or `tf.compat.v1.logging`.
+    Returns text encoded in a way suitable for print.
     """
     if isinstance(text, str):
         return text

@@ -22,7 +22,7 @@ train_input:
         './input/pubmed/pubmed_daily_update/tfrecord/uncased_msl128_mp20_wwm_dupe5/train',
         './input/pubmed/pubmed_fulltext/tfrecord/uncased_msl128_mp20_wwm_dupe5/train'
     ]
-    vocab_file: '../../vocab/uncased_pubmed_abstracts_and_fulltext_vocab.txt'
+    vocab_file: '../vocab/uncased_pubmed_abstracts_and_fulltext_vocab.txt'
     max_sequence_length: 128
     max_predictions_per_seq: 20  # maximum number of masked LM predictions per sequence.
     batch_size: 1024
@@ -34,7 +34,7 @@ eval_input:
         './input/pubmed/pubmed_daily_update/tfrecord/uncased_msl128_mp20_wwm_dupe5/test',
         './input/pubmed/pubmed_fulltext/tfrecord/uncased_msl128_mp20_wwm_dupe5/test'
     ]
-    vocab_file: '../../vocab/uncased_pubmed_abstracts_and_fulltext_vocab.txt'
+    vocab_file: '../vocab/uncased_pubmed_abstracts_and_fulltext_vocab.txt'
     max_sequence_length: 128
     max_predictions_per_seq: 20  # maximum number of masked LM predictions per sequence.
     batch_size: 64

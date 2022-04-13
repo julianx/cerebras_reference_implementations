@@ -3,7 +3,7 @@
 train_input:
     data_processor: "BertCSVDataProcessor"
     data_dir: "./owt_pretraining/train_512k_uncased_msl512/"
-    vocab_file: "../../vocab/google_research_uncased_L-12_H-768_A-12.txt"
+    vocab_file: "../vocab/google_research_uncased_L-12_H-768_A-12.txt"
     max_sequence_length: 512
     max_predictions_per_seq: 80
     batch_size: 256 # for GPU(16GB) set batch_size: 4
@@ -19,7 +19,7 @@ train_input:
 eval_input:
     data_processor: "BertCSVDataProcessor"
     data_dir: "./owt_pretraining/val_uncased_msl512/"
-    vocab_file: "../../vocab/google_research_uncased_L-12_H-768_A-12.txt"
+    vocab_file: "../vocab/google_research_uncased_L-12_H-768_A-12.txt"
     max_sequence_length: 512
     max_predictions_per_seq: 80
     batch_size: 256 # for GPU(16GB) set batch_size: 4
