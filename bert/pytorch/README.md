@@ -199,7 +199,7 @@ To run pre-training on the Cerebras System, the training job should be launched 
 
 **Syntax**
 
-Follow [How to train on the CS System](../../#how-to-train-on-the-cs-system) and execute the following from within the Cerebras environment:
+Execute the following from within the Cerebras environment:
 
 ```
 csrun_wse python-pt run.py --mode train --cs_ip x.x.x.x --params configs/params_bert_<model>.yaml --model_dir /path/to/model_dir
