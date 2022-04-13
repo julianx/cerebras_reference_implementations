@@ -37,8 +37,11 @@ import argparse
 import json
 import logging
 import os
+import sys
 
 import tensorflow as tf
+
+sys.path.append(os.path.join(os.path.dirname(__file__), "../../../.."))
 from bert.data_processing.sentence_pair_processor import data_generator
 from bert.data_processing.utils import (
     count_total_documents,

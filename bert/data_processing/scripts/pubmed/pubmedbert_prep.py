@@ -25,7 +25,9 @@ import math
 import multiprocessing
 import os
 import pprint
+import sys
 
+sys.path.append(os.path.join(os.path.dirname(__file__), "../../../.."))
 from bert.tf.input.scripts.create_tfrecords import create_tfrecords
 from bert.tf.input.scripts.pubmed.preprocess import (
     Downloader,

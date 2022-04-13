@@ -271,7 +271,7 @@ csrun_wse python run.py --mode train --cs_ip x.x.x.x --params configs/params_ber
 
 where:
 
-- `/path/to/yaml` is a path to the YAML config file with model parameters. A few example YAML config files can be found in [configs](configs) directory.
+- `/path/to/yaml` is a path to the YAML config file with model parameters. A few example YAML config files can be found in the [configs](configs) directory.
 - `/path/to/model_dir` is a path to the directory where you would like to store the logs and other artifacts of the run.
 
 > **Note**: For training on the Cerebras System with an orchestrator like Slurm, also see [Train on the Cerebras System](https://docs.cerebras.net/en/latest/tensorflow-docs/running-a-model/train-eval-predict.html).

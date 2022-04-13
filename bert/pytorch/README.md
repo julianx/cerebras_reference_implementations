@@ -58,8 +58,6 @@ This example follows the standard practice of two-phase pre-training for BERT mo
 
 The scripts for downloading and preprocessing OpenWebText dataset: [https://skylion007.github.io/OpenWebTextCorpus/](https://skylion007.github.io/OpenWebTextCorpus/) are located [here](../data_processing/scripts/owt/).
 
-> **Note**: The OpenWebText is just one example of the datasets that can be used for BERT training. See [Appendix](#appendix) for other datasets.
-
 The preprocessing comprises of creating CSV files containing sequences and labels.
 
 Start by downloading the OWT dataset by accessing the following link from a browser:
@@ -184,7 +182,7 @@ The above-created CSV files are then used by the `BertCSVDynamicMaskDataProcesso
 
 **IMPORTANT**: See the following notes before proceeding further.
 
-**Parameter settings in YAML config file**: The config YAML files are located in [configs](configs/) directory. Before starting a pre-training run, make sure that in the YAML config file you are using:
+**Parameter settings in YAML config file**: The config YAML files are located in the [configs](configs/) directory. Before starting a pre-training run, make sure that in the YAML config file you are using:
 
    - The `train_input.data_dir` parameter points to the correct dataset, and
    - The `train_input.max_sequence_length` parameter corresponds to the sequence length of the dataset.
