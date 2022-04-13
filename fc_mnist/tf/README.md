@@ -36,7 +36,7 @@ although the `data_dir` can be customized (see the [TF documentation](
 https://www.tensorflow.org/datasets/api_docs/python/tfds/load)
 for more information).
 
-Before running on CPU, `tfds` data should be downloaded using `prepare_data.py`. See the [RELEASE NOTES](../../RELEASE-NOTES.md#tensorflow-datasets) for more details.
+Before running on CPU, `tfds` data should be downloaded using `prepare_data.py`. 
 
 The input pipeline does minimal processing on this dataset. The dataset
 returns one batch at a time, of the form:
