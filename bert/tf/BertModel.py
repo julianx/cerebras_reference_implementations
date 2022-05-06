@@ -13,23 +13,43 @@
 # limitations under the License.
 
 import tensorflow as tf
-from bert.tf.layers.CLSLayer import CLSLayer
-from bert.tf.layers.Encoder import Encoder
-from bert.tf.layers.MLMLayer import MLMLayer
-from bert.tf.layers.MLMLossLayer import MLMLossLayer
-from bert.tf.transformer_utils import create_embedding_layers
-from common.tf.layers.CrossEntropyFromLogitsLayer import (
+from cerebras_reference_implementations.bert.tf.layers.CLSLayer import CLSLayer
+from cerebras_reference_implementations.bert.tf.layers.Encoder import Encoder
+from cerebras_reference_implementations.bert.tf.layers.MLMLayer import MLMLayer
+from cerebras_reference_implementations.bert.tf.layers.MLMLossLayer import (
+    MLMLossLayer,
+)
+from cerebras_reference_implementations.bert.tf.transformer_utils import (
+    create_embedding_layers,
+)
+from cerebras_reference_implementations.common.tf.layers.CrossEntropyFromLogitsLayer import (
     CrossEntropyFromLogitsLayer,
 )
-from common.tf.layers.DenseLayer import DenseLayer
-from common.tf.layers.DropoutLayer import DropoutLayer
-from common.tf.layers.EmbeddingLayer import EmbeddingLayer
-from common.tf.layers.Input import SetupInputTensor
-from common.tf.layers.LayerNormalizationLayer import LayerNormalizationLayer
-from common.tf.metrics.perplexity import perplexity_metric
-from common.tf.model_utils.create_initializer import create_initializer
-from common.tf.optimizers.Trainer import Trainer
-from common.tf.TFBaseModel import TFBaseModel
+from cerebras_reference_implementations.common.tf.layers.DenseLayer import (
+    DenseLayer,
+)
+from cerebras_reference_implementations.common.tf.layers.DropoutLayer import (
+    DropoutLayer,
+)
+from cerebras_reference_implementations.common.tf.layers.EmbeddingLayer import (
+    EmbeddingLayer,
+)
+from cerebras_reference_implementations.common.tf.layers.Input import (
+    SetupInputTensor,
+)
+from cerebras_reference_implementations.common.tf.layers.LayerNormalizationLayer import (
+    LayerNormalizationLayer,
+)
+from cerebras_reference_implementations.common.tf.metrics.perplexity import (
+    perplexity_metric,
+)
+from cerebras_reference_implementations.common.tf.model_utils.create_initializer import (
+    create_initializer,
+)
+from cerebras_reference_implementations.common.tf.optimizers.Trainer import (
+    Trainer,
+)
+from cerebras_reference_implementations.common.tf.TFBaseModel import TFBaseModel
 
 
 class BertModel(TFBaseModel):

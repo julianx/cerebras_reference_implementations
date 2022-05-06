@@ -15,7 +15,7 @@
 from typing import Optional
 
 import torch
-from common.pytorch import cb_model as cm
+from cerebras_reference_implementations.common.pytorch import cb_model as cm
 from torch.utils.tensorboard import SummaryWriter
 
 

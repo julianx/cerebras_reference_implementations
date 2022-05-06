@@ -15,8 +15,12 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from common.pytorch.metrics import AccuracyMetric
-from common.pytorch.PyTorchBaseModel import PyTorchBaseModel
+from cerebras_reference_implementations.common.pytorch.metrics import (
+    AccuracyMetric,
+)
+from cerebras_reference_implementations.common.pytorch.PyTorchBaseModel import (
+    PyTorchBaseModel,
+)
 
 
 class MNIST(nn.Module):

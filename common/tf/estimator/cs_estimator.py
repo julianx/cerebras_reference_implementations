@@ -15,7 +15,7 @@
 import inspect
 
 import tensorflow as tf
-from common.tf.estimator.utils import (
+from cerebras_reference_implementations.common.tf.estimator.utils import (
     host_call_to_eval_metric_ops,
     validate_host_call,
 )
@@ -26,7 +26,6 @@ try:
     # good canary for this as it's only possible in the weight streaming
     # environment
     try:
-        import tfwse  # noqa
         from cerebras.tf.ws.cs_estimator_ws import (
             CerebrasEstimator as estimator,
         )

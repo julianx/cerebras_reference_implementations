@@ -13,11 +13,21 @@
 # limitations under the License.
 
 import tensorflow as tf
-from common.tf.layers.BaseLayer import BaseLayer
-from common.tf.layers.DenseLayer import DenseLayer
-from common.tf.layers.LayerNormalizationLayer import LayerNormalizationLayer
-from common.tf.layers.utils import summary_layer
-from common.tf.model_utils.reshape_gather import reshape_gather
+from cerebras_reference_implementations.common.tf.layers.BaseLayer import (
+    BaseLayer,
+)
+from cerebras_reference_implementations.common.tf.layers.DenseLayer import (
+    DenseLayer,
+)
+from cerebras_reference_implementations.common.tf.layers.LayerNormalizationLayer import (
+    LayerNormalizationLayer,
+)
+from cerebras_reference_implementations.common.tf.layers.utils import (
+    summary_layer,
+)
+from cerebras_reference_implementations.common.tf.model_utils.reshape_gather import (
+    reshape_gather,
+)
 
 
 class MLMLayer(BaseLayer):

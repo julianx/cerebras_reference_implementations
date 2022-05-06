@@ -19,7 +19,9 @@ from datetime import datetime
 from typing import Optional, Union
 
 import torch
-from common.pytorch.pytorch_base_runner import PyTorchBaseRunner
+from cerebras_reference_implementations.common.pytorch.pytorch_base_runner import (
+    PyTorchBaseRunner,
+)
 from torch.cuda.amp import GradScaler, autocast
 
 

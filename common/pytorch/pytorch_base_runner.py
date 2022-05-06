@@ -25,14 +25,28 @@ from typing import Callable, Optional, Tuple
 
 import numpy as np
 import torch
-from common.pytorch import cb_model as cm
-from common.pytorch import modes
-from common.pytorch.loss_utils import LossSaver, extract_loss
-from common.pytorch.metrics import compute_all_metrics, reset_all_metrics
-from common.pytorch.PyTorchBaseModel import PyTorchBaseModel
-from common.pytorch.summaries import save_all_summaries
-from common.pytorch.summary_collection import SummaryCollection
-from common.pytorch.utils import visit_structure
+from cerebras_reference_implementations.common.pytorch import cb_model as cm
+from cerebras_reference_implementations.common.pytorch import modes
+from cerebras_reference_implementations.common.pytorch.loss_utils import (
+    LossSaver,
+    extract_loss,
+)
+from cerebras_reference_implementations.common.pytorch.metrics import (
+    compute_all_metrics,
+    reset_all_metrics,
+)
+from cerebras_reference_implementations.common.pytorch.PyTorchBaseModel import (
+    PyTorchBaseModel,
+)
+from cerebras_reference_implementations.common.pytorch.summaries import (
+    save_all_summaries,
+)
+from cerebras_reference_implementations.common.pytorch.summary_collection import (
+    SummaryCollection,
+)
+from cerebras_reference_implementations.common.pytorch.utils import (
+    visit_structure,
+)
 from torch.utils.tensorboard import SummaryWriter
 
 
@@ -97,6 +111,7 @@ class PyTorchBaseRunner(metaclass=abc.ABCMeta):
                 raise ValueError(
                     "Summary collection is not supported in CS workflows"
                 )
+
             summary_ctx = SummaryCollection(
                 os.path.join(self._model_dir, "summaries"), self._model.model,
             )
@@ -892,15 +907,21 @@ class PyTorchBaseRunner(metaclass=abc.ABCMeta):
             model: PyTorchBaseModel = model_fn(params)
 
             if compile_only:
-                from common.pytorch.pytorch_cs_compiler import PyTorchCSCompiler
+                from cerebras_reference_implementations.common.pytorch.pytorch_cs_compiler import (
+                    PyTorchCSCompiler,
+                )
 
                 return PyTorchCSCompiler(model, params)
             else:
-                from common.pytorch.pytorch_cs_runner import PyTorchCSRunner
+                from cerebras_reference_implementations.common.pytorch.pytorch_cs_runner import (
+                    PyTorchCSRunner,
+                )
 
                 return PyTorchCSRunner(model, params)
         else:
-            from common.pytorch.pytorch_runner import PyTorchRunner
+            from cerebras_reference_implementations.common.pytorch.pytorch_runner import (
+                PyTorchRunner,
+            )
 
             use_gpu = (
                 not runconfig_params["cpu"]

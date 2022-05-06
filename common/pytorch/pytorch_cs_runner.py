@@ -17,9 +17,13 @@ import os
 import time
 
 import torch
-from common.pytorch import modes
-from common.pytorch.perf_utils import save_perf
-from common.pytorch.pytorch_base_runner import PyTorchBaseRunner
+from cerebras_reference_implementations.common.pytorch import modes
+from cerebras_reference_implementations.common.pytorch.perf_utils import (
+    save_perf,
+)
+from cerebras_reference_implementations.common.pytorch.pytorch_base_runner import (
+    PyTorchBaseRunner,
+)
 
 import cerebras.framework.torch as cbtorch
 import cerebras.framework.torch.core.cb_model as cm

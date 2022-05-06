@@ -30,16 +30,20 @@ from typing import Optional, Tuple
 
 import torch
 import torch.utils.checkpoint
-from bert.pytorch.huggingface_common.activations import ACT2FN
-from bert.pytorch.huggingface_common.configuration_bert import BertConfig
-from bert.pytorch.huggingface_common.file_utils import (
+from cerebras_reference_implementations.bert.pytorch.huggingface_common.activations import (
+    ACT2FN,
+)
+from cerebras_reference_implementations.bert.pytorch.huggingface_common.configuration_bert import (
+    BertConfig,
+)
+from cerebras_reference_implementations.bert.pytorch.huggingface_common.file_utils import (
     ModelOutput,
     add_code_sample_docstrings,
     add_start_docstrings,
     add_start_docstrings_to_model_forward,
     replace_return_docstrings,
 )
-from bert.pytorch.huggingface_common.modeling_outputs import (
+from cerebras_reference_implementations.bert.pytorch.huggingface_common.modeling_outputs import (
     BaseModelOutputWithPastAndCrossAttentions,
     BaseModelOutputWithPoolingAndCrossAttentions,
     CausalLMOutputWithCrossAttentions,
@@ -50,14 +54,18 @@ from bert.pytorch.huggingface_common.modeling_outputs import (
     SequenceClassifierOutput,
     TokenClassifierOutput,
 )
-from bert.pytorch.huggingface_common.modeling_utils import (
+from cerebras_reference_implementations.bert.pytorch.huggingface_common.modeling_utils import (
     PreTrainedModel,
     apply_chunking_to_forward,
     find_pruneable_heads_and_indices,
     prune_linear_layer,
 )
-from bert.pytorch.huggingface_common.utils import logging
-from common.pytorch.model_utils.weight_initializers import trunc_normal_
+from cerebras_reference_implementations.bert.pytorch.huggingface_common.utils import (
+    logging,
+)
+from cerebras_reference_implementations.common.pytorch.model_utils.weight_initializers import (
+    trunc_normal_,
+)
 from torch import nn
 from torch.nn import BCEWithLogitsLoss, CrossEntropyLoss, MSELoss
 

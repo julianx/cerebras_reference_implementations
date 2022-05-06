@@ -12,13 +12,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from common.tf.layers.AddLayer import AddLayer
-from common.tf.layers.AttentionLayer import SelfAttentionLayer
-from common.tf.layers.BaseLayer import BaseLayer
-from common.tf.layers.DropoutLayer import DropoutLayer
-from common.tf.layers.FeedForwardNetwork import FeedForwardNetwork
-from common.tf.layers.LayerNormalizationLayer import LayerNormalizationLayer
-from common.tf.layers.PrePostProcessWrapper import PrePostProcessWrapper
+from cerebras_reference_implementations.common.tf.layers.AddLayer import (
+    AddLayer,
+)
+from cerebras_reference_implementations.common.tf.layers.AttentionLayer import (
+    SelfAttentionLayer,
+)
+from cerebras_reference_implementations.common.tf.layers.BaseLayer import (
+    BaseLayer,
+)
+from cerebras_reference_implementations.common.tf.layers.DropoutLayer import (
+    DropoutLayer,
+)
+from cerebras_reference_implementations.common.tf.layers.FeedForwardNetwork import (
+    FeedForwardNetwork,
+)
+from cerebras_reference_implementations.common.tf.layers.LayerNormalizationLayer import (
+    LayerNormalizationLayer,
+)
+from cerebras_reference_implementations.common.tf.layers.PrePostProcessWrapper import (
+    PrePostProcessWrapper,
+)
 
 
 class Encoder(BaseLayer):

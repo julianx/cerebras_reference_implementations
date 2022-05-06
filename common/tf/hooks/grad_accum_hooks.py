@@ -13,7 +13,9 @@
 # limitations under the License.
 
 import tensorflow as tf
-from common.tf.optimizers.Trainer import Trainer
+from cerebras_reference_implementations.common.tf.optimizers.Trainer import (
+    Trainer,
+)
 from tensorflow.core.framework.summary_pb2 import Summary
 from tensorflow.core.util.event_pb2 import SessionLog
 from tensorflow.python.framework import ops

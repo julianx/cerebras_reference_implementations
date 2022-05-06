@@ -14,7 +14,9 @@
 
 import os
 
-from common.model_utils.count_lines import count_lines
+from cerebras_reference_implementations.common.model_utils.count_lines import (
+    count_lines,
+)
 
 
 def get_vocab_size(vocab_file, vocab_size=None):

@@ -15,11 +15,16 @@
 import os
 import sys
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
-from common.pytorch.run_utils import run
-from fc_mnist.pytorch.data import get_eval_dataloader, get_train_dataloader
-from fc_mnist.pytorch.model import MNISTModel
-from fc_mnist.pytorch.utils import set_defaults
+sys.path.append(os.path.join(os.path.dirname(__file__), "../../.."))
+from cerebras_reference_implementations.common.pytorch.run_utils import run
+from cerebras_reference_implementations.fc_mnist.pytorch.data import (
+    get_eval_dataloader,
+    get_train_dataloader,
+)
+from cerebras_reference_implementations.fc_mnist.pytorch.model import MNISTModel
+from cerebras_reference_implementations.fc_mnist.pytorch.utils import (
+    set_defaults,
+)
 
 
 def main():

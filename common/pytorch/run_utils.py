@@ -17,10 +17,17 @@ import os
 from typing import Callable, Optional
 
 import torch
-from common.pytorch import modes
-from common.pytorch.pytorch_base_runner import PyTorchBaseRunner
-from common.pytorch.PyTorchBaseModel import PyTorchBaseModel
-from common.pytorch.utils import get_params_from_args, setup_logging
+from cerebras_reference_implementations.common.pytorch import modes
+from cerebras_reference_implementations.common.pytorch.pytorch_base_runner import (
+    PyTorchBaseRunner,
+)
+from cerebras_reference_implementations.common.pytorch.PyTorchBaseModel import (
+    PyTorchBaseModel,
+)
+from cerebras_reference_implementations.common.pytorch.utils import (
+    get_params_from_args,
+    setup_logging,
+)
 
 DATA_FN_TYPE = Callable[[dict], torch.utils.data.DataLoader]
 

@@ -16,8 +16,10 @@ import os
 from copy import deepcopy
 
 import yaml
-from common.tf.model_utils.vocab_utils import get_vocab_size
-from common.tf.run_utils import is_cs
+from cerebras_reference_implementations.common.tf.model_utils.vocab_utils import (
+    get_vocab_size,
+)
+from cerebras_reference_implementations.common.tf.run_utils import is_cs
 
 try:
     from cerebras.pb.common.tri_state_pb2 import TS_DISABLED, TS_ENABLED

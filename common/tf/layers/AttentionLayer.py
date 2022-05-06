@@ -15,9 +15,15 @@
 import math
 
 import tensorflow as tf
-from common.tf.layers.BaseLayer import BaseLayer
-from common.tf.layers.DenseLayer import DenseLayer
-from common.tf.layers.DropoutLayer import DropoutLayer
+from cerebras_reference_implementations.common.tf.layers.BaseLayer import (
+    BaseLayer,
+)
+from cerebras_reference_implementations.common.tf.layers.DenseLayer import (
+    DenseLayer,
+)
+from cerebras_reference_implementations.common.tf.layers.DropoutLayer import (
+    DropoutLayer,
+)
 
 
 class AttentionLayer(BaseLayer):

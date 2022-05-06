@@ -12,17 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from bert.pytorch.huggingface_common.modeling_bert import (
+from cerebras_reference_implementations.bert.pytorch.huggingface_common.modeling_bert import (
     BertConfig,
     BertForMaskedLM,
     BertForPreTraining,
 )
-from bert.pytorch.utils import (
+from cerebras_reference_implementations.bert.pytorch.utils import (
     check_unused_model_params,
     set_custom_stack_params,
 )
-from common.pytorch.metrics import AccuracyMetric, PerplexityMetric
-from common.pytorch.PyTorchBaseModel import PyTorchBaseModel
+from cerebras_reference_implementations.common.pytorch.metrics import (
+    AccuracyMetric,
+    PerplexityMetric,
+)
+from cerebras_reference_implementations.common.pytorch.PyTorchBaseModel import (
+    PyTorchBaseModel,
+)
 from torch.nn import CrossEntropyLoss
 
 

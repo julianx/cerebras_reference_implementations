@@ -15,11 +15,16 @@
 import os
 import sys
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
-from bert.pytorch.data import eval_input_dataloader, train_input_dataloader
-from bert.pytorch.model import BertForPreTrainingModel
-from bert.pytorch.utils import set_defaults
-from common.pytorch.run_utils import run
+sys.path.append(os.path.join(os.path.dirname(__file__), "../../.."))
+from cerebras_reference_implementations.bert.pytorch.data import (
+    eval_input_dataloader,
+    train_input_dataloader,
+)
+from cerebras_reference_implementations.bert.pytorch.model import (
+    BertForPreTrainingModel,
+)
+from cerebras_reference_implementations.bert.pytorch.utils import set_defaults
+from cerebras_reference_implementations.common.pytorch.run_utils import run
 
 
 def main():

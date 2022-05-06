@@ -19,8 +19,12 @@ import os
 from abc import ABC, abstractmethod
 
 import tensorflow as tf
-from common.tf.input.utils import transform_dataset
-from common.tf.model_utils.shard_dataset import shard_dataset
+from cerebras_reference_implementations.common.tf.input.utils import (
+    transform_dataset,
+)
+from cerebras_reference_implementations.common.tf.model_utils.shard_dataset import (
+    shard_dataset,
+)
 
 
 class TfRecordsProcessor(ABC):

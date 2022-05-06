@@ -21,20 +21,30 @@ import sys
 
 import tensorflow as tf
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
-from common.tf.estimator.cs_estimator import CerebrasEstimator
-from common.tf.estimator.run_config import CSRunConfig
-from common.tf.estimator.utils import cs_disable_summaries, cs_enable_summaries
-from common.tf.run_utils import (
+sys.path.append(os.path.join(os.path.dirname(__file__), "../../.."))
+from cerebras_reference_implementations.common.tf.estimator.cs_estimator import (
+    CerebrasEstimator,
+)
+from cerebras_reference_implementations.common.tf.estimator.run_config import (
+    CSRunConfig,
+)
+from cerebras_reference_implementations.common.tf.estimator.utils import (
+    cs_disable_summaries,
+    cs_enable_summaries,
+)
+from cerebras_reference_implementations.common.tf.run_utils import (
     check_env,
     get_csrunconfig_dict,
     is_cs,
     save_params,
     update_params_from_args,
 )
-from fc_mnist.tf.data import eval_input_fn, train_input_fn
-from fc_mnist.tf.model import model_fn
-from fc_mnist.tf.utils import (
+from cerebras_reference_implementations.fc_mnist.tf.data import (
+    eval_input_fn,
+    train_input_fn,
+)
+from cerebras_reference_implementations.fc_mnist.tf.model import model_fn
+from cerebras_reference_implementations.fc_mnist.tf.utils import (
     DEFAULT_YAML_PATH,
     get_custom_stack_params,
     get_params,

@@ -13,8 +13,13 @@
 # limitations under the License.
 
 import tensorflow as tf
-from common.tf.layers.BaseLayer import BaseLayer
-from common.tf.layers.utils import boundary_cast, summary_layer
+from cerebras_reference_implementations.common.tf.layers.BaseLayer import (
+    BaseLayer,
+)
+from cerebras_reference_implementations.common.tf.layers.utils import (
+    boundary_cast,
+    summary_layer,
+)
 
 
 class PoolerLayerV2(BaseLayer):

@@ -16,10 +16,10 @@ import functools
 import os
 from collections import defaultdict
 
-import common.pytorch.utils as utils
+import cerebras_reference_implementations.common.pytorch.utils as utils
 import numpy as np
 import torch
-from common.pytorch import cb_model as cm
+from cerebras_reference_implementations.common.pytorch import cb_model as cm
 
 
 class SummaryCollection:

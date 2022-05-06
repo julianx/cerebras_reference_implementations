@@ -12,10 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from common.tf.layers.BaseLayer import BaseLayer
-from common.tf.layers.DenseLayer import DenseLayer
-from common.tf.layers.DropoutLayer import DropoutLayer
-from common.tf.layers.PoolerLayerV2 import PoolerLayerV2
+from cerebras_reference_implementations.common.tf.layers.BaseLayer import (
+    BaseLayer,
+)
+from cerebras_reference_implementations.common.tf.layers.DenseLayer import (
+    DenseLayer,
+)
+from cerebras_reference_implementations.common.tf.layers.DropoutLayer import (
+    DropoutLayer,
+)
+from cerebras_reference_implementations.common.tf.layers.PoolerLayerV2 import (
+    PoolerLayerV2,
+)
 
 
 class CLSLayer(BaseLayer):

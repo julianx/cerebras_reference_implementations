@@ -18,7 +18,7 @@ try:
     import cerebras.framework.torch.core.cb_model as cm
 except ImportError:
     # use stand-in namespaces if cerebras.framework.torch is not importable
-    from common.pytorch import cb_model as cm
+    from cerebras_reference_implementations.common.pytorch import cb_model as cm
 
 
 def get_data_for_task(

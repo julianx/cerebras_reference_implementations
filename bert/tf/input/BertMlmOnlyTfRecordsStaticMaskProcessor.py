@@ -16,9 +16,15 @@
 Processor for handling TF records for MLM only data for BERT
 """
 import tensorflow as tf
-from bert.tf.input.utils import parse_raw_tfrecord
-from common.tf.input.TfRecordsProcessor import TfRecordsProcessor
-from common.tf.input.utils import bucketed_batch
+from cerebras_reference_implementations.bert.tf.input.utils import (
+    parse_raw_tfrecord,
+)
+from cerebras_reference_implementations.common.tf.input.TfRecordsProcessor import (
+    TfRecordsProcessor,
+)
+from cerebras_reference_implementations.common.tf.input.utils import (
+    bucketed_batch,
+)
 
 
 class BertMlmOnlyTfRecordsStaticMaskProcessor(TfRecordsProcessor):

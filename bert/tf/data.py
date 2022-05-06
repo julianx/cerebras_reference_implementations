@@ -14,14 +14,16 @@
 
 import sys
 
-from bert.tf.input.BertMlmOnlyTfRecordsDynamicMaskProcessor import (  # noqa
+from cerebras_reference_implementations.bert.tf.input.BertMlmOnlyTfRecordsDynamicMaskProcessor import (  # noqa
     BertMlmOnlyTfRecordsDynamicMaskProcessor,
 )
-from bert.tf.input.BertMlmOnlyTfRecordsStaticMaskProcessor import (  # noqa
+from cerebras_reference_implementations.bert.tf.input.BertMlmOnlyTfRecordsStaticMaskProcessor import (  # noqa
     BertMlmOnlyTfRecordsStaticMaskProcessor,
 )
 
-from bert.tf.input.BertTfRecordsProcessor import BertTfRecordsProcessor  # noqa
+from cerebras_reference_implementations.bert.tf.input.BertTfRecordsProcessor import (  # noqa
+    BertTfRecordsProcessor,
+)
 
 
 def train_input_fn(params, input_context=None):

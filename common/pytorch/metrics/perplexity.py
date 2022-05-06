@@ -17,7 +17,9 @@ Perplexity metric for PyTorch.
 """
 import math
 
-from common.pytorch.metrics.cb_metric import CBMetric
+from cerebras_reference_implementations.common.pytorch.metrics.cb_metric import (
+    CBMetric,
+)
 
 
 class PerplexityMetric(CBMetric):

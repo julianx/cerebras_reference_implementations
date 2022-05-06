@@ -13,9 +13,13 @@
 # limitations under the License.
 
 import tensorflow as tf
-from bert.tf.BertModel import BertModel
-from common.tf.estimator.cs_estimator_spec import CSEstimatorSpec
-from common.tf.hooks.grad_accum_hooks import get_grad_accum_hooks
+from cerebras_reference_implementations.bert.tf.BertModel import BertModel
+from cerebras_reference_implementations.common.tf.estimator.cs_estimator_spec import (
+    CSEstimatorSpec,
+)
+from cerebras_reference_implementations.common.tf.hooks.grad_accum_hooks import (
+    get_grad_accum_hooks,
+)
 
 
 def model_fn(features, labels, mode, params):

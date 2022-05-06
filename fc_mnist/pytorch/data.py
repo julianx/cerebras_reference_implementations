@@ -13,8 +13,10 @@
 # limitations under the License.
 
 import torch
-from common.pytorch import cb_model as cm
-from common.pytorch.utils import get_input_dtype
+from cerebras_reference_implementations.common.pytorch import cb_model as cm
+from cerebras_reference_implementations.common.pytorch.utils import (
+    get_input_dtype,
+)
 from torchvision import datasets, transforms
 
 

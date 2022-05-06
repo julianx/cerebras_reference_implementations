@@ -16,7 +16,9 @@ import logging
 from typing import Tuple
 
 import torch
-from common.pytorch.pytorch_base_runner import PyTorchBaseRunner
+from cerebras_reference_implementations.common.pytorch.pytorch_base_runner import (
+    PyTorchBaseRunner,
+)
 
 import cerebras.framework.torch as cbtorch
 import cerebras.framework.torch.core.cb_model as cm

@@ -17,10 +17,19 @@ The trainer class.
 """
 import numpy as np
 import tensorflow as tf
-from common.tf.layers.utils import summary_layer
-from common.tf.optimizers.AdamWOptimizer import AdamWOptimizer
-from common.tf.optimizers.GradAccumOptimizer import GradAccumOptimizer
-from common.tf.optimizers.LossScale import CSDynamicLossScale, wrap_optimizer
+from cerebras_reference_implementations.common.tf.layers.utils import (
+    summary_layer,
+)
+from cerebras_reference_implementations.common.tf.optimizers.AdamWOptimizer import (
+    AdamWOptimizer,
+)
+from cerebras_reference_implementations.common.tf.optimizers.GradAccumOptimizer import (
+    GradAccumOptimizer,
+)
+from cerebras_reference_implementations.common.tf.optimizers.LossScale import (
+    CSDynamicLossScale,
+    wrap_optimizer,
+)
 from tensorflow.compat.v1.train.experimental import DynamicLossScale
 from tensorflow.python.keras.mixed_precision.experimental.loss_scale_optimizer import (
     LossScaleOptimizer,

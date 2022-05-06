@@ -19,7 +19,7 @@ from bisect import bisect_right
 from typing import List
 
 import torch
-from common.pytorch import cb_model as cm
+from cerebras_reference_implementations.common.pytorch import cb_model as cm
 
 
 class LRScheduler(torch.optim.lr_scheduler.LambdaLR, abc.ABC):

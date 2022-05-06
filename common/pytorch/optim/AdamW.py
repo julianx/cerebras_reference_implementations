@@ -16,7 +16,7 @@ import math
 import sys
 
 import torch
-from bert.pytorch.huggingface_common.optimization import (
+from cerebras_reference_implementations.bert.pytorch.huggingface_common.optimization import (
     AdamW as HuggingFaceAdamW,
 )
 

@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import torch
-from common.pytorch import amp
+from cerebras_reference_implementations.common.pytorch import amp
 
 
 class GradientClipper:

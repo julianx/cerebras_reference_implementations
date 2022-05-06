@@ -12,10 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from common.tf.layers.ActivationLayer import ActivationLayer
-from common.tf.layers.BaseLayer import BaseLayer
-from common.tf.layers.DenseLayer import DenseLayer
-from common.tf.layers.DropoutLayer import DropoutLayer
+from cerebras_reference_implementations.common.tf.layers.ActivationLayer import (
+    ActivationLayer,
+)
+from cerebras_reference_implementations.common.tf.layers.BaseLayer import (
+    BaseLayer,
+)
+from cerebras_reference_implementations.common.tf.layers.DenseLayer import (
+    DenseLayer,
+)
+from cerebras_reference_implementations.common.tf.layers.DropoutLayer import (
+    DropoutLayer,
+)
 
 
 class FeedForwardNetwork(BaseLayer):

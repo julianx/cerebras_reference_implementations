@@ -13,14 +13,22 @@
 # limitations under the License.
 
 import tensorflow as tf
-from common.tf.layers.ActivationLayer import ActivationLayer as Activation
-from common.tf.layers.CrossEntropyFromLogitsLayer import (
+from cerebras_reference_implementations.common.tf.layers.ActivationLayer import (
+    ActivationLayer as Activation,
+)
+from cerebras_reference_implementations.common.tf.layers.CrossEntropyFromLogitsLayer import (
     CrossEntropyFromLogitsLayer,
 )
-from common.tf.layers.DenseLayer import DenseLayer as Dense
-from common.tf.layers.DropoutLayer import DropoutLayer as Dropout
-from common.tf.optimizers.Trainer import Trainer
-from common.tf.TFBaseModel import TFBaseModel
+from cerebras_reference_implementations.common.tf.layers.DenseLayer import (
+    DenseLayer as Dense,
+)
+from cerebras_reference_implementations.common.tf.layers.DropoutLayer import (
+    DropoutLayer as Dropout,
+)
+from cerebras_reference_implementations.common.tf.optimizers.Trainer import (
+    Trainer,
+)
+from cerebras_reference_implementations.common.tf.TFBaseModel import TFBaseModel
 
 NUM_CLASSES = 10
 

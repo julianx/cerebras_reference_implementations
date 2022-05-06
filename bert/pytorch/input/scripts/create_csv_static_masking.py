@@ -24,13 +24,17 @@ import os
 import sys
 from collections import defaultdict
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "../../../.."))
-from bert.data_processing.sentence_pair_processor import data_generator
-from bert.data_processing.utils import (
+sys.path.append(os.path.join(os.path.dirname(__file__), "../../../../.."))
+from cerebras_reference_implementations.bert.data_processing.sentence_pair_processor import (
+    data_generator,
+)
+from cerebras_reference_implementations.bert.data_processing.utils import (
     count_total_documents,
     get_output_type_shapes,
 )
-from common.input.utils import check_and_create_output_dirs
+from cerebras_reference_implementations.common.input.utils import (
+    check_and_create_output_dirs,
+)
 
 
 def parse_args():

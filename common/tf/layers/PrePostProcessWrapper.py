@@ -12,7 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from common.tf.layers.AddLayer import AddLayer
+from cerebras_reference_implementations.common.tf.layers.AddLayer import (
+    AddLayer,
+)
 
 
 class PrePostProcessWrapper:

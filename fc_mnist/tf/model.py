@@ -16,8 +16,12 @@
 Simple FC MNIST model to be used with Estimator
 """
 import tensorflow as tf
-from common.tf.estimator.cs_estimator_spec import CSEstimatorSpec
-from fc_mnist.tf.FCMnistModel import FCMnistModel
+from cerebras_reference_implementations.common.tf.estimator.cs_estimator_spec import (
+    CSEstimatorSpec,
+)
+from cerebras_reference_implementations.fc_mnist.tf.FCMnistModel import (
+    FCMnistModel,
+)
 
 
 def model_fn(features, labels, mode, params):

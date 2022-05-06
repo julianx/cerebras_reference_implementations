@@ -12,9 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from common.tf.layers.ActivationLayer import ActivationLayer
-from common.tf.layers.BaseLayer import BaseLayer
-from common.tf.layers.utils import boundary_cast, summary_layer
+from cerebras_reference_implementations.common.tf.layers.ActivationLayer import (
+    ActivationLayer,
+)
+from cerebras_reference_implementations.common.tf.layers.BaseLayer import (
+    BaseLayer,
+)
+from cerebras_reference_implementations.common.tf.layers.utils import (
+    boundary_cast,
+    summary_layer,
+)
 from tensorflow.keras.layers import Dense
 
 

@@ -27,14 +27,18 @@ import os
 import pprint
 import sys
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "../../../.."))
-from bert.tf.input.scripts.create_tfrecords import create_tfrecords
-from bert.tf.input.scripts.pubmed.preprocess import (
+sys.path.append(os.path.join(os.path.dirname(__file__), "../../../../.."))
+from cerebras_reference_implementations.bert.data_processing.scripts.pubmed.preprocess import (
     Downloader,
     TextFormatting,
     TextSharding,
 )
-from common.input.utils import check_and_create_output_dirs
+from cerebras_reference_implementations.bert.tf.input.scripts.create_tfrecords import (
+    create_tfrecords,
+)
+from cerebras_reference_implementations.common.input.utils import (
+    check_and_create_output_dirs,
+)
 
 
 def main(args):

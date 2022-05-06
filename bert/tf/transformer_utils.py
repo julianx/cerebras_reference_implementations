@@ -14,8 +14,12 @@
 
 
 import tensorflow as tf
-from common.tf.layers.EmbeddingLayer import EmbeddingLayer
-from common.tf.layers.PositionEmbeddingLayer import PositionEmbeddingLayer
+from cerebras_reference_implementations.common.tf.layers.EmbeddingLayer import (
+    EmbeddingLayer,
+)
+from cerebras_reference_implementations.common.tf.layers.PositionEmbeddingLayer import (
+    PositionEmbeddingLayer,
+)
 
 
 def create_embedding_layers(

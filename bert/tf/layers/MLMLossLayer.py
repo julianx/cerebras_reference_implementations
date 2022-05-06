@@ -13,8 +13,10 @@
 # limitations under the License.
 
 import tensorflow as tf
-from common.tf.layers.BaseLayer import BaseLayer
-from common.tf.layers.CrossEntropyFromLogitsLayer import (
+from cerebras_reference_implementations.common.tf.layers.BaseLayer import (
+    BaseLayer,
+)
+from cerebras_reference_implementations.common.tf.layers.CrossEntropyFromLogitsLayer import (
     CrossEntropyFromLogitsLayer,
 )
 

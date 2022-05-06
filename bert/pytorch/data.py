@@ -14,10 +14,13 @@
 
 import sys
 
-from bert.pytorch.input.BertCSVDynamicMaskDataProcessor import (  # noqa
+from cerebras_reference_implementations.bert.pytorch.input.BertCSVDynamicMaskDataProcessor import (  # noqa
     BertCSVDynamicMaskDataProcessor,
 )
-from bert.pytorch.input.BertCSVDataProcessor import BertCSVDataProcessor  # noqa
+
+from cerebras_reference_implementations.bert.pytorch.input.BertCSVDataProcessor import (  # noqa
+    BertCSVDataProcessor,
+)
 
 
 def train_input_dataloader(params):

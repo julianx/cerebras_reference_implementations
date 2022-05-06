@@ -13,7 +13,10 @@
 # limitations under the License.
 
 import tensorflow as tf
-from common.tf.metrics.utils import aggregate_across_replicas, metric_variable
+from cerebras_reference_implementations.common.tf.metrics.utils import (
+    aggregate_across_replicas,
+    metric_variable,
+)
 
 
 def calculate_perplexity(total_loss_per_step, total_target_tokens_per_step):

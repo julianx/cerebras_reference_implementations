@@ -12,7 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from common.tf.layers.utils import summary_layer
+from cerebras_reference_implementations.common.tf.layers.utils import (
+    summary_layer,
+)
 
 
 def SetupInputTensor(features, tf_summary=False):

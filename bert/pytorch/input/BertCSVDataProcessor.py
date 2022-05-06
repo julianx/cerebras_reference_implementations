@@ -24,9 +24,12 @@ try:
     import cerebras.framework.torch.core.cb_model as cm
 except ImportError:
     # use stand-in namespaces if cerebras.framework.torch is not importable
-    from common.pytorch import cb_model as cm
+    from cerebras_reference_implementations.common.pytorch import cb_model as cm
 
-from bert.pytorch.input.utils import get_meta_data, shard_and_shuffle_data
+from cerebras_reference_implementations.bert.pytorch.input.utils import (
+    get_meta_data,
+    shard_and_shuffle_data,
+)
 
 
 class BertCSVDataProcessor(torch.utils.data.IterableDataset):
