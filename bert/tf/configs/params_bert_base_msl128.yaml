@@ -18,16 +18,16 @@
 train_input:
     data_processor: BertTfRecordsProcessor
     data_dir: './input/owt/train_512k_uncased_msl128'
-    vocab_file: '../vocab/google_research_uncased_L-12_H-768_A-12.txt'
+    vocab_file: '../../vocab/google_research_uncased_L-12_H-768_A-12.txt'
     max_sequence_length: 128
     max_predictions_per_seq: 20  # maximum number of masked LM predictions per sequence.
     batch_size: 256
-    buckets: [39, 56, 72, 89, 108]
+    buckets: [39, 56, 72, 89, 108] # should only be used with batch size 256
 
 eval_input:
     data_processor: BertTfRecordsProcessor
     data_dir: './input/owt/val_uncased_msl128'
-    vocab_file: '../vocab/google_research_uncased_L-12_H-768_A-12.txt'
+    vocab_file: '../../vocab/google_research_uncased_L-12_H-768_A-12.txt'
     max_sequence_length: 128
     max_predictions_per_seq: 20  # maximum number of masked LM predictions per sequence.
     batch_size: 256
@@ -87,3 +87,4 @@ runconfig:
     model_dir: 'model_dir'
     cs_ip:
     mode: 'train'
+    multireplica: False

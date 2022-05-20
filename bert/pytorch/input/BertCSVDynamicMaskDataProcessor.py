@@ -31,6 +31,9 @@ from cerebras_reference_implementations.bert.pytorch.input_utils import (
     task_id,
 )
 from cerebras_reference_implementations.common.pytorch import cb_model as cm
+from cerebras_reference_implementations.common.pytorch.input_utils import (
+    bucketed_batch,
+)
 
 
 class BertCSVDynamicMaskDataProcessor(torch.utils.data.IterableDataset):
@@ -82,6 +85,8 @@ class BertCSVDynamicMaskDataProcessor(torch.utils.data.IterableDataset):
         self.repeat = params.get("repeat", False)
         self.mask_whole_word = params.get("mask_whole_word", False)
         self.do_lower = params.get("do_lower", False)
+        self.dynamic_mlm_scale = params.get("dynamic_mlm_scale", False)
+        self.buckets = params.get("buckets", None)
 
         # Multi-processing params.
         self.num_workers = params.get("num_workers", 0)
@@ -164,16 +169,13 @@ class BertCSVDynamicMaskDataProcessor(torch.utils.data.IterableDataset):
         if self.num_workers:
             dataloader = torch.utils.data.DataLoader(
                 self,
-                batch_size=self.batch_size,
+                batch_size=None,
                 num_workers=self.num_workers,
-                drop_last=self.drop_last,
                 prefetch_factor=self.prefetch_factor,
                 persistent_workers=self.persistent_workers,
             )
         else:
-            dataloader = torch.utils.data.DataLoader(
-                self, batch_size=self.batch_size, drop_last=self.drop_last,
-            )
+            dataloader = torch.utils.data.DataLoader(self, batch_size=None)
 
         return dataloader
 
@@ -222,9 +224,19 @@ class BertCSVDynamicMaskDataProcessor(torch.utils.data.IterableDataset):
 
     def __len__(self):
         # Returns the len of dataset on the task process
-        return self.num_examples_per_task
+        if not self.drop_last:
+            return (
+                self.num_examples_per_task + self.batch_size - 1
+            ) // self.batch_size
+        elif self.buckets is None:
+            return self.num_examples_per_task // self.batch_size
+        else:
+            # give an under-estimate in case we don't fully fill some buckets
+            length = self.num_examples_per_task // self.batch_size
+            length -= len(self.buckets)
+            return length
 
-    def __iter__(self):
+    def get_single_item(self):
         """
         Iterating over the data to construct input features.
 
@@ -324,3 +336,20 @@ class BertCSVDynamicMaskDataProcessor(torch.utils.data.IterableDataset):
                 features["next_sentence_label"] = next_sentence_label
 
             yield features
+
+    def __iter__(self):
+        batched_dataset = bucketed_batch(
+            self.get_single_item(),
+            self.batch_size,
+            buckets=self.buckets,
+            element_length_fn=lambda feats: np.sum(feats["attention_mask"]),
+            drop_last=self.drop_last,
+            seed=self.shuffle_seed,
+        )
+        for batch in batched_dataset:
+            if self.dynamic_mlm_scale:
+                scale = self.batch_size / torch.sum(batch["masked_lm_mask"])
+                batch["mlm_loss_scale"] = scale.expand(
+                    self.batch_size, 1
+                ).half()
+            yield batch

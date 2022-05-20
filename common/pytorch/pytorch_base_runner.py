@@ -111,7 +111,6 @@ class PyTorchBaseRunner(metaclass=abc.ABCMeta):
                 raise ValueError(
                     "Summary collection is not supported in CS workflows"
                 )
-
             summary_ctx = SummaryCollection(
                 os.path.join(self._model_dir, "summaries"), self._model.model,
             )
@@ -662,8 +661,15 @@ class PyTorchBaseRunner(metaclass=abc.ABCMeta):
         eval_metrics = compute_all_metrics()
         if eval_metrics:
             if self._writer:
-                for key, value in eval_metrics.items():
-                    self._writer.add_scalar(key, value, self._global_step)
+                for metric_scope, metric_value in visit_structure(
+                    eval_metrics,
+                    select_fn=lambda struct: isinstance(struct, (int, float)),
+                    strict=True,
+                ):
+                    key = "/".join(metric_scope)
+                    self._writer.add_scalar(
+                        key, metric_value, self._global_step
+                    )
             logging.info(f"Avg eval_metrics = {eval_metrics}")
 
         # Normalize total loss

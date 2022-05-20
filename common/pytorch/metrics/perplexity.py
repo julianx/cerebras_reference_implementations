@@ -33,7 +33,7 @@ class PerplexityMetric(CBMetric):
 
         Args:
             labels: Tensor of shape (batch, sequence) and type int32.
-            logits: Tensor of shape (batch, sequence, vocab) and type float.
+            loss: Tensor of shape (1) and type float.
             weights: Optional float Tensor of shape (batch, sequence).
         """
         if weights is None:

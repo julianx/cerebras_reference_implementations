@@ -30,7 +30,8 @@ A model directory contains the following assets:
 * `model.py` containing a model class that inherits from `PyTorchBaseModel`.
 * `data.py` with input data pipeline implementation.
 * `run.py` that contains the training script for Cerebras hardware.
-* `configs/params.yaml` YAML file containing a default model configuration and the training hyperparameters. The easiest way to change a model configuration or hyperparameters is to change parameters in this YAML config file.
+* `configs/` directory of YAML files containing model configurations and training hyperparameters. The easiest way to change a model configuration or hyperparameters is to change parameters in a YAML config file.
+* `configs/default_params.yaml` (PyTorch only) YAML file containing default parameter values. A parameter value in this file will be used whenever a config does not specify that parameter. NOTE: this is not a configuration that can be run on its own.
 
 ## Compile on CPU
 

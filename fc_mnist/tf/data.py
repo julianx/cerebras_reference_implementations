@@ -44,7 +44,7 @@ def input_fn(params, mode=tf.estimator.ModeKeys.TRAIN):
     if batch_size is None:
         batch_size = input_params["batch_size"]
 
-    data, info = tfds.load("mnist", data_dir=data_dir, with_info=True)
+    data, info = tfds.load("mnist", data_dir=data_dir, with_info=training)
     ds = data["train"] if training else data["test"]
 
     if training and input_params["shuffle"]:

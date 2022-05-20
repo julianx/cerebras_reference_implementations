@@ -26,6 +26,7 @@ import re
 import warnings
 from contextlib import contextmanager
 from dataclasses import dataclass
+from math import log
 from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union
 
 import torch
@@ -901,6 +902,66 @@ class PreTrainedModel(
             ]
 
         return new_embeddings
+
+    def setup_fixed_position_embedding(
+        self, seq_len, embed_len, min_timescale=1.0, max_timescale=1.0e4,
+    ):
+        """Adds several sinusoids of different frequencies to a Tensor.
+
+        Each channel of the input Tensor is incremented by a sinusoid of a
+        different frequency and phase.
+
+        This allows the attention to learn to use absolute and relative
+        positions. Timing signals should be added to some precursors of both
+        the query and the memory inputs to the attention.
+
+        The use of relative position is possible because ``sin(x+y)`` and
+        ``cos(x+y)`` can be expressed in terms of ``y``, ``sin(x)`` and
+        ``cos(x)``.
+
+        In specific, this function uses a geometric sequence of timescales
+        starting with  ``min_timescale`` and ending with ``max_timescale``.
+        The number of different timescales is equal to ``channels / 2``. For
+        each timescale, this function generates the two sinusoidal signals
+        ``sin(timestep/timescale)`` and ``cos(timestep/timescale)``.  All
+        these sinusoids are concatenated in the channels dimension.
+
+        Args:
+            seq_len (:obj:`int`): The sequence length of the desired position
+                embeddings.
+            embed_len (:obj:`int`): The embedding dimension of the output.
+            min_timescale (:obj:`int`, optional): The scale of the shortest
+                sinusoid.
+            max_timescale (:obj:`int`, optional): The scale of the longest
+                sinusoid.
+
+        adapted from: https://github.com/tensorflow/tensor2tensor/blob\
+            /1843c72d1d5faf4c085bb198b5dde0908f4081d0/tensor2tensor/layers\
+            /common_attention.py#L407
+
+        """
+
+        position = torch.arange(seq_len, dtype=torch.float32)
+        num_timescales = embed_len // 2
+        log_timescale_increment = log(
+            float(max_timescale) / float(min_timescale)
+        ) / (float(num_timescales) - 1)
+        inv_timescales = min_timescale * torch.exp(
+            torch.arange(num_timescales, dtype=torch.float32)
+            * -log_timescale_increment
+        )
+        scaled_time = torch.unsqueeze(position, 1) * torch.unsqueeze(
+            inv_timescales, 0
+        )
+        signal = torch.cat(
+            [torch.sin(scaled_time), torch.cos(scaled_time)], axis=1
+        )
+        signal = torch.reshape(signal, (seq_len, 2, num_timescales))
+        signal = torch.transpose(signal, 1, 2)
+        signal = torch.reshape(signal, (seq_len, 2 * num_timescales))
+        signal = torch.nn.functional.pad(signal, (0, 0, 0, embed_len % 2),)
+
+        return torch.nn.Parameter(signal, requires_grad=False)
 
     def _get_resized_lm_head(
         self,

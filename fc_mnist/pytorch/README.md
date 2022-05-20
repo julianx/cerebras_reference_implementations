@@ -7,7 +7,7 @@ for performing handwriting recognition on the MNIST dataset.
 
 To run with the default configurations in `params.yaml`, run:
 ```bash
-python run.py --params configs/params.yaml
+csrun_wse python-pt run.py --params configs/params.yaml
 ```
 
 ### Structure

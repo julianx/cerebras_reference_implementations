@@ -121,6 +121,9 @@ class MLMLayer(BaseLayer):
     def call(self, inputs, masked_lm_positions, embedding_table):
         [batch_size, length, hidden_size] = inputs.get_shape()
         max_predictions_per_seq = masked_lm_positions.get_shape()[1]
+        assert (
+            length >= max_predictions_per_seq
+        ), "Max number of predictions larger than max sequence length."
         masked_inputs = reshape_gather(
             inputs, masked_lm_positions, self.enable_gpu_optimizations
         )

@@ -75,6 +75,8 @@ class LRScheduler(torch.optim.lr_scheduler.LambdaLR, abc.ABC):
             self.cb_scheduler = self._configure_cerebras_lrs(optimizer)
 
             super().__init__(optimizer._optimizer, lr_lambda=self.lr_function)
+
+            self._last_lr = 0.1
         else:
             super().__init__(optimizer, lr_lambda=self.lr_function)
 
@@ -339,6 +341,8 @@ class SequentialLR(torch.optim.lr_scheduler.SequentialLR):
                 scheduler._step_count -= 1
 
             scheduler.step()
+
+            self._last_lr = scheduler.get_last_lr()
 
     def step(self):
         if cm.use_cs():

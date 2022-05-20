@@ -89,7 +89,7 @@ class PositionEmbeddingLayer(BaseLayer):
         elif self.embedding_type == "fixed":
             self.fixed_position_embedding = tf.Variable(
                 name="fixed_position_embedding",
-                initial_value=lambda: self._get_timing_signal_1d(
+                initial_value=lambda: self.setup_fixed_position_embedding(
                     seq_length, embedding_size
                 ),
                 dtype=self.variable_dtype,
@@ -147,7 +147,7 @@ class PositionEmbeddingLayer(BaseLayer):
             output = summary_layer(output)
         return output
 
-    def _get_timing_signal_1d(
+    def setup_fixed_position_embedding(
         self, length, channels, min_timescale=1.0, max_timescale=1.0e4
     ):
         """Adds several sinusoids of different frequencies to a Tensor.

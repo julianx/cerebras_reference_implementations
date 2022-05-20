@@ -37,14 +37,12 @@ class AccuracyMetric(CBMetric):
             correct_predictions = correct_predictions * weights
             num_tokens = float(weights.sum())
 
-        self.total_correct_predictions += correct_predictions
+        self.total_correct_predictions += correct_predictions.sum()
         self.total_num_tokens += num_tokens
 
     def compute(self):
         """Returns the computed accuracy as a float."""
-        return float(
-            self.total_correct_predictions.sum() / self.total_num_tokens
-        )
+        return float(self.total_correct_predictions / self.total_num_tokens)
 
     def reset_state(self):
         self.total_correct_predictions = 0.0

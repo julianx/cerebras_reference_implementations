@@ -52,6 +52,7 @@ from cerebras_reference_implementations.bert.pytorch.huggingface_common.modeling
     NextSentencePredictorOutput,
     QuestionAnsweringModelOutput,
     SequenceClassifierOutput,
+    SummarizationModelOutput,
     TokenClassifierOutput,
 )
 from cerebras_reference_implementations.bert.pytorch.huggingface_common.modeling_utils import (
@@ -1197,18 +1198,26 @@ class BertForPreTrainingLoss(nn.Module):
         seq_relationship_score,
         next_sentence_label,
         masked_lm_weights,
+        mlm_loss_scale=None,
     ):
         # implement the 'batch_size' MLM Scaling mode, which does mean
         # reduction over the batch, but also scales by the mean number
         # of predictions per sequence in the dataset (given by config)
         loss_fct = CrossEntropyLoss(reduction='none')
+        if mlm_loss_scale is not None:
+            masked_lm_weights = masked_lm_weights * mlm_loss_scale
         masked_lm_loss = loss_fct(
             prediction_scores.view(-1, vocab_size), labels.view(-1).long(),
         ) * masked_lm_weights.view(-1)
 
-        masked_lm_loss = (
-            torch.sum(masked_lm_loss) / labels.shape[0] * self.mlm_loss_weight
-        )
+        if mlm_loss_scale is not None:
+            masked_lm_loss = torch.sum(masked_lm_loss) / labels.shape[0]
+        else:
+            masked_lm_loss = (
+                torch.sum(masked_lm_loss)
+                / labels.shape[0]
+                * self.mlm_loss_weight
+            )
 
         total_loss = masked_lm_loss.half()
         if not self.disable_nsp:
@@ -1265,6 +1274,7 @@ class BertForPreTraining(BertPreTrainedModel):
         return_dict=None,
         masked_lm_weights=None,
         masked_lm_positions=None,
+        mlm_loss_scale=None,
     ):
         r"""
         labels (:obj:`torch.LongTensor` of shape ``(batch_size, sequence_length)``, `optional`):
@@ -1335,6 +1345,7 @@ class BertForPreTraining(BertPreTrainedModel):
                 seq_relationship_score,
                 next_sentence_label,
                 masked_lm_weights,
+                mlm_loss_scale=mlm_loss_scale,
             )
 
         if not return_dict:
@@ -1582,6 +1593,7 @@ class BertForMaskedLM(BertPreTrainedModel):
         return_dict=None,
         masked_lm_weights=None,
         masked_lm_positions=None,
+        mlm_loss_scale=None,
     ):
         r"""
         labels (:obj:`torch.LongTensor` of shape :obj:`(batch_size, sequence_length)`, `optional`):
@@ -1636,6 +1648,7 @@ class BertForMaskedLM(BertPreTrainedModel):
                 None,
                 None,
                 masked_lm_weights,
+                mlm_loss_scale=mlm_loss_scale,
             )
 
         if not return_dict:
@@ -2050,15 +2063,14 @@ class BertForTokenClassificationLoss(nn.Module):
         loss = None
         if labels is not None:
             loss_fct = CrossEntropyLoss(reduction='none')
+
             loss = loss_fct(
                 logits.view(-1, self.num_labels), labels.view(-1).long()
             )
             if attention_mask is not None:
                 # Only keep active parts of the loss
                 loss = loss * attention_mask.to(dtype=logits.dtype).view(-1)
-                loss = torch.sum(loss) / labels.shape[0] * self.loss_weight
-            else:
-                loss = torch.sum(loss) / labels.shape[0]
+            loss = torch.sum(loss) / labels.shape[0] * self.loss_weight
             loss = loss.half()
         return loss
 
@@ -2067,9 +2079,10 @@ class BertForTokenClassification(BertPreTrainedModel):
 
     _keys_to_ignore_on_load_unexpected = [r"pooler"]
 
-    def __init__(self, config, loss_weight=1.0):
+    def __init__(self, config, loss_weight=1.0, include_padding_in_loss=True):
         super().__init__(config)
         self.num_labels = config.num_labels
+        self.include_padding_in_loss = include_padding_in_loss
 
         self.bert = BertModel(config, add_pooling_layer=False)
         classifier_dropout = (
@@ -2099,6 +2112,7 @@ class BertForTokenClassification(BertPreTrainedModel):
         input_ids=None,
         attention_mask=None,
         token_type_ids=None,
+        loss_mask=None,
         position_ids=None,
         head_mask=None,
         inputs_embeds=None,
@@ -2135,7 +2149,7 @@ class BertForTokenClassification(BertPreTrainedModel):
         sequence_output = self.dropout(sequence_output)
         logits = self.classifier(sequence_output)
 
-        loss = self.loss_fn(logits, labels, attention_mask)
+        loss = self.loss_fn(logits, labels, loss_mask)
 
         if not return_dict:
             output = (logits,) + outputs[2:]
@@ -2160,14 +2174,14 @@ class BertForQuestionAnsweringLoss(nn.Module):
     def __init__(self):
         super(BertForQuestionAnsweringLoss, self).__init__()
 
-    def forward(self, logits, labels, label_weights):
+    def forward(self, logits, labels, cls_label_weights):
 
         # [batch, max_seq_len, 2] -> [batch, 2, max_seq_len]
         logits = torch.permute(logits, [0, 2, 1])
         max_seq_len = logits.shape[-1]
         loss_fct = CrossEntropyLoss(reduction='none')
-        loss = loss_fct(logits.view(-1, max_seq_len), labels.view(-1).long())
-        return (loss * label_weights.view(-1)).sum() / labels.shape[0]
+        loss = loss_fct(logits.reshape(-1, max_seq_len), labels.view(-1).long())
+        return (loss * cls_label_weights.view(-1)).sum() / labels.shape[0]
 
 
 class BertForQuestionAnswering(BertPreTrainedModel):
@@ -2254,6 +2268,129 @@ class BertForQuestionAnswering(BertPreTrainedModel):
             loss=total_loss,
             start_logits=start_logits,
             end_logits=end_logits,
+            hidden_states=outputs.hidden_states,
+            attentions=outputs.attentions,
+        )
+
+
+@add_start_docstrings(
+    """
+    BERTSUM Model with an extractive summarization head on top as 
+    implemented in: https://arxiv.org/pdf/1903.10318.pdf.
+    """,
+    BERT_START_DOCSTRING,
+)
+class BertSummarizationLoss(nn.Module):
+    def __init__(
+        self, num_labels, loss_weight=1.0,
+    ):
+        super(BertSummarizationLoss, self).__init__()
+        self.loss_weight = loss_weight
+        self.num_labels = num_labels
+
+    def forward(self, logits, labels, label_weights):
+        loss = None
+        if labels is not None:
+            loss_fct = CrossEntropyLoss(reduction="none")
+            loss = loss_fct(
+                logits.view(-1, self.num_labels), labels.view(-1).long()
+            )
+            loss = loss * label_weights.view(-1)
+            loss = loss.sum() / labels.shape[0] * self.loss_weight
+            loss = loss.half()
+
+        return loss
+
+
+class BertSummarization(BertPreTrainedModel):
+
+    _keys_to_ignore_on_load_unexpected = [r"pooler"]
+
+    def __init__(
+        self, config, loss_weight=1.0, use_cls_bias=True,
+    ):
+        super().__init__(config)
+        self.num_labels = config.num_labels
+
+        self.bert = BertModel(config, add_pooling_layer=False)
+        self.classifier = nn.Linear(
+            config.hidden_size, self.num_labels, bias=use_cls_bias
+        )
+        self.loss_fn = BertSummarizationLoss(self.num_labels, loss_weight,)
+        self.init_weights()
+
+    @add_start_docstrings_to_model_forward(
+        BERT_INPUTS_DOCSTRING.format("batch_size, max_cls_tokens")
+    )
+    @add_code_sample_docstrings(
+        tokenizer_class=_TOKENIZER_FOR_DOC,
+        checkpoint=_CHECKPOINT_FOR_DOC,
+        output_type=SummarizationModelOutput,
+        config_class=_CONFIG_FOR_DOC,
+    )
+    def forward(
+        self,
+        input_ids=None,
+        attention_mask=None,
+        token_type_ids=None,
+        position_ids=None,
+        head_mask=None,
+        inputs_embeds=None,
+        labels=None,
+        cls_tokens_positions=None,
+        cls_label_weights=None,
+        output_attentions=None,
+        output_hidden_states=None,
+        return_dict=None,
+    ):
+        r"""
+        labels (:obj:`torch.LongTensor` of shape :obj:`(batch_size, max_cls_tokens)`, `optional`):
+            Labels for computing the segment classification loss. Indices should be in ``[0, 1]``.
+        cls_label_weights (:obj:`torch.LongTensor` of shape :obj:`(batch_size, max_cls_tokens`)):
+            Indicator weights to be used in computation of the segment classification loss. Equal to `1` for all real `[CLS]` tokens, and `0` for all padded.
+        """
+        return_dict = (
+            return_dict
+            if return_dict is not None
+            else self.config.use_return_dict
+        )
+
+        outputs = self.bert(
+            input_ids,
+            attention_mask=attention_mask,
+            token_type_ids=token_type_ids,
+            position_ids=position_ids,
+            head_mask=head_mask,
+            inputs_embeds=inputs_embeds,
+            output_attentions=output_attentions,
+            output_hidden_states=output_hidden_states,
+            return_dict=return_dict,
+        )
+
+        sequence_output = outputs[0]
+
+        hidden_size = list(sequence_output.size())[-1]
+
+        batch_size, max_pred = list(cls_tokens_positions.size())
+        index = torch.broadcast_to(
+            cls_tokens_positions.unsqueeze(2),
+            (batch_size, max_pred, hidden_size),
+        ).long()
+        masked_output = torch.gather(sequence_output, dim=1, index=index)
+        sequence_output = masked_output
+
+        logits = self.classifier(sequence_output)
+
+        cls_label_weights = cls_label_weights.clone().to(logits.dtype)
+        loss = self.loss_fn(logits, labels, cls_label_weights)
+
+        if not return_dict:
+            output = (logits,) + outputs[2:]
+            return ((loss,) + output) if loss is not None else output
+
+        return SummarizationModelOutput(
+            loss=loss,
+            logits=logits,
             hidden_states=outputs.hidden_states,
             attentions=outputs.attentions,
         )

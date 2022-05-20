@@ -12,9 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import contextlib
+
 try:
     from cerebras.framework.torch import amp
-    from cerebras.framework.torch.core import cb_model, modes
+    from cerebras.framework.torch.core import cb_model, modes, name_scope
 except ImportError:
     from types import SimpleNamespace
 
@@ -55,3 +57,7 @@ except ImportError:
         @staticmethod
         def is_valid(mode):
             return mode in modes.get_modes()
+
+    @contextlib.contextmanager
+    def name_scope(name: str):
+        yield None

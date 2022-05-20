@@ -24,6 +24,8 @@ Key functions include:
 """
 
 import os
+from enum import Enum
+from functools import lru_cache
 
 import numpy as np
 import tensorflow as tf
@@ -33,6 +35,41 @@ import yaml
 #######################################
 ## Utils for CS1 runtime
 #######################################
+class ExecutionMode(Enum):
+    WeightStreaming = 1
+    Pipeline = 2
+    OutsideCerebras = 3
+
+
+@lru_cache(1)  # So we only do this once
+def get_execution_mode():
+    try:
+        # We have two versions of estimator internally depending on whether we are
+        # running weight streaming or pipeline. Being able to import tfwse is a
+        # good canary for this as it's only possible in the weight streaming
+        # environment
+        try:
+            import tfwse  # noqa
+            from cerebras.tf.ws.cs_estimator_ws import (  # noqa
+                CerebrasEstimator as estimator,
+            )
+
+            return ExecutionMode.WeightStreaming
+        except ImportError:
+            from cerebras.tf.cs_estimator import (  # noqa
+                CerebrasEstimator as estimator,
+            )
+
+            return ExecutionMode.Pipeline
+    except ImportError:
+        # If we can import neither of these, we are outside the Cerebras env
+        from tensorflow_estimator.python.estimator.estimator import (  # noqa
+            Estimator as estimator,
+        )
+
+        return ExecutionMode.OutsideCerebras
+
+
 def is_cs(params):
     """
     Check if the runtime enviroment is that of a Cerebras System.

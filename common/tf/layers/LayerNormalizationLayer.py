@@ -24,6 +24,7 @@ from tensorflow.keras.layers import LayerNormalization
 
 class LayerNormalizationLayer(BaseLayer):
     """Wrapper around the Keras layer normalization.
+    Reference: `Layer Normalization <https://arxiv.org/abs/1607.06450>`_.
     """
 
     def __init__(

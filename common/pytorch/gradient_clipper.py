@@ -28,14 +28,14 @@ class GradientClipper:
     def set_max_gradients(
         self, max_gradient_norm: float = 0.0, max_gradient_value: float = 0.0
     ):
-        if max_gradient_norm < 0.0:
+        if max_gradient_norm is None or max_gradient_norm < 0.0:
             raise ValueError(
-                f"max_gradient_norm cannot be negative. Got "
+                f"max_gradient_norm cannot be none or negative. Got "
                 f"{max_gradient_norm}"
             )
-        if max_gradient_value < 0.0:
+        if max_gradient_value is None or max_gradient_value < 0.0:
             raise ValueError(
-                f"max_gradient_value cannot be negative. Got "
+                f"max_gradient_value cannot be none or negative. Got "
                 f"{max_gradient_value}"
             )
         if max_gradient_norm > 0.0 and max_gradient_value > 0.0:
@@ -54,7 +54,10 @@ class GradientClipper:
 
     def check_amp(self):
         """Disable GGC here if GGC + DLS is enabled by the GradScaler"""
-        if amp.get_init_params().get("max_gradient_norm", None) is not None:
+        if (
+            self.max_gradient > 0
+            and amp.get_init_params().get("max_gradient_norm", None) is not None
+        ):
             assert self.max_gradient_fn == torch.nn.utils.clip_grad_norm_
             self.max_gradient_fn = None
 

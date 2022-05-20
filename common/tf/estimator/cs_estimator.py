@@ -26,6 +26,7 @@ try:
     # good canary for this as it's only possible in the weight streaming
     # environment
     try:
+        import tfwse  # noqa
         from cerebras.tf.ws.cs_estimator_ws import (
             CerebrasEstimator as estimator,
         )
@@ -152,18 +153,22 @@ class CerebrasEstimator(estimator):
             features=features, labels=labels, mode=mode, params=params
         )
 
-        if getattr(spec, "eval_metric_ops", None):
-            raise ValueError(
-                "eval_metric_ops specified, please use host_call instead"
-            )
-
-        # Convert host_call to eval_metric_ops
+        # Only one must be specified
         host_call = getattr(spec, "host_call", None)
-        host_call = validate_host_call(host_call)
-        if host_call:
-            eval_metric_ops = host_call_to_eval_metric_ops(host_call)
-        else:
-            eval_metric_ops = None
+        eval_metric_ops = getattr(spec, "eval_metric_ops", None)
+
+        if host_call and eval_metric_ops:
+            raise ValueError(
+                "Please specify only one of `host_call` or `eval_metric_ops`, "
+                "not both."
+            )
+        elif host_call:
+            # Validate and convert host_call to eval_metric_ops
+            host_call = validate_host_call(host_call)
+            if host_call:
+                eval_metric_ops = host_call_to_eval_metric_ops(host_call)
+            else:
+                eval_metric_ops = None
 
         # Create a new EstimatorSpec with host_call turned into eval_metric_ops
         spec_args = inspect.getargspec(tf.estimator.EstimatorSpec)

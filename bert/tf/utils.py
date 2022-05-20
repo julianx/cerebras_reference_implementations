@@ -243,9 +243,10 @@ def set_defaults(params, mode=None):
 def get_custom_stack_params(params):
     stack_params = {}
     runconfig_params = params["runconfig"]
-    if runconfig_params.get("mode", "train") == "eval":
+    if runconfig_params["mode"] == "eval" or runconfig_params.get(
+        "multireplica"
+    ):
         stack_params["ir_mode"] = "xla-cirh-all"
-
     if (
         is_cs(runconfig_params)
         or runconfig_params["validate_only"]
@@ -267,7 +268,7 @@ def set_custom_config(config, params):
     if params.get("model_type") == "BertSummarizationModel":
         config.matching.autogen_policy = AP_ENABLED
     # Enable multi-replica
-    if params["model"].get("multireplica", False):
+    if runconfig_params.get("multireplica"):
         config.target_num_replicas = -1
         config.placement.pathfinder_inter_replica.fix_existing = TS_DISABLED
         config.placement.pathfinder_inter_replica.allow_infeasible_initial_state = (
@@ -277,7 +278,7 @@ def set_custom_config(config, params):
             "AttentionCIRHConverter"
         )
     if params["model"].get("use_vsl", False):
-        config.matching.kernel.tensor_index_assume_vsl = True
+        config.matching.kernel.use_legacy_vsl = True
 
     if runconfig_params.get("mode", "train") == "eval":
         config.matching.add_pack_and_unpack.max_egress_per_pack = 1
@@ -285,6 +286,7 @@ def set_custom_config(config, params):
         config.matching.match_lair.disabled_converters.append(
             "UnsortedGatherConverter"
         )
+
     return config
 
 

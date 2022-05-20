@@ -43,6 +43,8 @@ class FeedForwardNetwork(BaseLayer):
             layer with this initializer. Defaults to None.
         kernel_regularizer (callable): Kernel regularizer.
         bias_initializer (callable): Bias regularizer.
+        dropout_seed (int): Seed with which to initialize the dropout layer.
+            Defaults to ``None``.
 
     """
 
@@ -57,6 +59,7 @@ class FeedForwardNetwork(BaseLayer):
         output_layer_initializer=None,
         kernel_regularizer=None,
         bias_regularizer=None,
+        dropout_seed=None,
         boundary_casting=False,
         tf_summary=False,
         **kwargs,
@@ -124,6 +127,7 @@ class FeedForwardNetwork(BaseLayer):
                     rate=layers_dropout_rates[dense_layer]
                     if layers_dropout_rates is not None
                     else 0.0,
+                    seed=dropout_seed,
                     boundary_casting=boundary_casting,
                     tf_summary=tf_summary,
                     dtype=self.dtype_policy,

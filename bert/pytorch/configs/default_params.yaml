@@ -1,13 +1,12 @@
 train_input:
     shuffle: True
-    shuffle_seed: 1
 
 eval_input:
     shuffle: False
-    shuffle_seed: 1
 
 model:
     to_float16: False
+    enable_vts: False
     share_embedding_weights: True
     disable_nsp: False
     mlm_loss_weight: 1.0

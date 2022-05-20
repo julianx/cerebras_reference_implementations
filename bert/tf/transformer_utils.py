@@ -21,6 +21,10 @@ from cerebras_reference_implementations.common.tf.layers.PositionEmbeddingLayer 
     PositionEmbeddingLayer,
 )
 
+from cerebras_reference_implementations.common.tf.layers.SegmentEmbeddingLayer import (  # noqa
+    SegmentEmbeddingLayer,
+)
+
 
 def create_embedding_layers(
     vocab_size,
@@ -177,3 +181,32 @@ def create_autoregressive_attention_mask(
         )
 
     return auto_attn_mask
+
+
+def get_bits_per_x_dataset(params):
+    """Get the dataset to get the associated bits_per_byte constant
+
+    Args:
+        params (dict): Parameters for the current model training
+
+    Returns:
+        Parameters dictionary with the correct dataset set
+    """
+    eparams = params.get("eval_input", None)
+    if not eparams:
+        eparams = params.get("train_input", None)
+        assert (
+            eparams
+        ), "Neither eval_input nor train_input are specified. Aborting run!!"
+
+    # get the correct dataset for bits_per_byte metric
+    # defaults to empty data directory
+    dataset = None
+    data_dir = eparams.get("data_dir", "")
+    if "pile" in data_dir:
+        dataset = "pile"
+    elif "owt" in data_dir:
+        dataset = "openwebtext2"
+
+    params["model"]["bits_per_x_dataset"] = dataset
+    return params

@@ -120,6 +120,7 @@ class Trainer:
         self._gradient_global_norm = None
         self._loss_scale_value = None
         self.tf_summary = tf_summary
+        self._ws_summary = params.get("ws_summary", False)
 
     def build_train_ops(self, loss):
         """
@@ -141,6 +142,24 @@ class Trainer:
                 tf.compat.v1.summary.scalar(
                     'train/unclipped_grad_norm', self._gradient_global_norm
                 )
+
+                if self._ws_summary:
+                    gradient_num_zeros = tf.reduce_sum(
+                        [
+                            tf.reduce_sum(tf.cast(tf.equal(g, 0.0), tf.int32))
+                            for (g, v) in grads_and_vars
+                        ],
+                    )
+                    tf.compat.v1.summary.scalar(
+                        "train/grad_num_zeros", gradient_num_zeros
+                    )
+
+                    self._params_global_norm = tf.linalg.global_norm(
+                        [v for (g, v) in grads_and_vars]
+                    )
+                    tf.compat.v1.summary.scalar(
+                        'train/params_norm', self._params_global_norm
+                    )
 
         # This code mimics the CS1 dynamic loss scaling
         # kernel implementation, where the global norm of
@@ -360,15 +379,12 @@ class Trainer:
                     power=power,
                     cycle=schedule_params.get("cycle", False),
                 )
-            # Not supported on the Cerebras System yet
-            elif scheduler == "InverseExponentialTimeDecay":
-                step_exponent = schedule_params["step_exponent"]
-                return tf.compat.v1.train.inverse_time_decay(
-                    schedule_params["initial_learning_rate"],
-                    tf.cast(step, tf.float32) ** step_exponent,
-                    schedule_params["decay_steps"],
-                    schedule_params["decay_rate"],
-                    staircase=schedule_params.get("staircase", False),
+            elif scheduler == "Cosine":
+                return tf.compat.v1.train.cosine_decay(
+                    learning_rate=schedule_params["initial_learning_rate"],
+                    global_step=step,
+                    decay_steps=schedule_params["decay_steps"],
+                    alpha=schedule_params.get("alpha", 0.0),
                 )
             else:
                 raise ValueError(f"Unsupported LR scheduler {scheduler}")
@@ -376,7 +392,9 @@ class Trainer:
         # handle a constant learning rate
         # scientific notation (e.g. "1e-5") parsed as string in yaml
         if isinstance(self._lr_params, (float, str)):
-            return tf.constant(float(self._lr_params), dtype=tf.float32)
+            return tf.constant(
+                float(self._lr_params), dtype=tf.float32, name="lr"
+            )
 
         global_step = tf.compat.v1.train.get_or_create_global_step()
 
@@ -403,12 +421,24 @@ class Trainer:
             )
             if i == len(self._lr_params) - 1:
                 break
-            # all schedules except final become cases
-            if "steps" not in schedule_params:
+            # all schedules except final become cases, `decay_steps` is used
+            # by cosine decay schedule currently
+            if (
+                "steps" not in schedule_params
+                and "decay_steps" not in schedule_params
+            ):
                 raise ValueError(
                     "Non-final LR schedules must specify number of steps."
                 )
-            total_steps += schedule_params["steps"]
+            # one of two cases to enable schedules
+            if "steps" in schedule_params:
+                total_steps += schedule_params["steps"]
+            elif (
+                "decay_steps" in schedule_params
+                and schedule_params["scheduler"] == "Cosine"
+            ):
+                # add this case for cosine decay schedule
+                total_steps += schedule_params["decay_steps"]
             schedule_sequence.append(
                 (tf.less(global_step, total_steps), schedule_fn)
             )

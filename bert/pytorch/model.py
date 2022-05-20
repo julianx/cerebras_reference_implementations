@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import logging
+
 from cerebras_reference_implementations.bert.pytorch.huggingface_common.modeling_bert import (
     BertConfig,
     BertForMaskedLM,
@@ -42,9 +44,7 @@ class BertForPreTrainingModel(PyTorchBaseModel):
         optimizer_params = self.params["optimizer"]
         self.model = self.build_model(model_params)
 
-        super(BertForPreTrainingModel, self).__init__(
-            params=params, model=self.model, device=device
-        )
+        super().__init__(params=params, model=self.model, device=device)
 
         self.compute_eval_metrics = model_params.pop(
             "compute_eval_metrics", True
@@ -92,6 +92,9 @@ class BertForPreTrainingModel(PyTorchBaseModel):
             loss = loss * weights.view(-1)
         return loss.sum()
 
+    def create_config(self, **kwargs):
+        return BertConfig(**kwargs)
+
     def build_model(self, model_params):
         self.disable_nsp = model_params.pop("disable_nsp")
         self.mlm_loss_weight = model_params.pop("mlm_loss_weight")
@@ -129,21 +132,58 @@ class BertForPreTrainingModel(PyTorchBaseModel):
         kwargs["mlm_nonlinearity"] = model_params.pop(
             "mlm_nonlinearity", kwargs["hidden_act"]
         )
+        enable_vts = model_params.pop("enable_vts")
 
         check_unused_model_params(model_params)
 
         if self.disable_nsp:
             model = BertForMaskedLM(
-                BertConfig(**kwargs), mlm_loss_weight=self.mlm_loss_weight,
+                self.create_config(**kwargs),
+                mlm_loss_weight=self.mlm_loss_weight,
             )
         else:
             model = BertForPreTraining(
-                BertConfig(**kwargs), mlm_loss_weight=self.mlm_loss_weight,
+                self.create_config(**kwargs),
+                mlm_loss_weight=self.mlm_loss_weight,
             )
         self.loss_fn = model.loss_fn
+        if enable_vts:
+            from cerebras.framework.torch.nn import StripPadding
+
+            self.vts = StripPadding()
+        else:
+            self.vts = None
         return model
 
     def __call__(self, data):
+
+        if self.vts and not self.model.training:
+            self.vts = None
+            logging.info(
+                "VTS is only supported in train mode. Disabling for the "
+                "current run."
+            )
+        if self.vts:
+            # always mask the main input
+            masks = {
+                "attention_mask": ["input_ids"],
+            }
+            # if NSP is enabled, mask it with main mask
+            if "token_type_ids" in data:
+                masks["attention_mask"].append("token_type_ids")
+
+            # Check if we're "gathering" MLM predictions:
+            if "masked_lm_positions" in data:
+                # Yes, so use the masked_lm_mask for MLM tensors
+                masks["masked_lm_mask"] = ["masked_lm_positions", "labels"]
+            else:
+                # No, so use main mask for MLM label
+                masks["attention_mask"].append("labels")
+
+            for mask, inputs in masks.items():
+                mask_tensor = data[mask]
+                for name in inputs:
+                    data[name] = self.vts(data[name], mask_tensor)
 
         # MLM Needs a half precision "weights" tensor; use binary mask for now.
         data["masked_lm_weights"] = data.pop("masked_lm_mask").half()

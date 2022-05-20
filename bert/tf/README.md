@@ -274,6 +274,8 @@ where:
 - `/path/to/yaml` is a path to the YAML config file with model parameters. A few example YAML config files can be found in the [configs](configs) directory.
 - `/path/to/model_dir` is a path to the directory where you would like to store the logs and other artifacts of the run.
 
+When training on the Cerebras System, the `--multireplica` flag can be used to do data-parallel training across multiple copies of the model at the same time.
+
 > **Note**: For training on the Cerebras System with an orchestrator like Slurm, also see [Train on the Cerebras System](https://docs.cerebras.net/en/latest/tensorflow-docs/running-a-model/train-eval-predict.html).
 
 ## Run pre-training on GPU

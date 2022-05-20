@@ -337,7 +337,7 @@ class AttentionLayer(BaseLayer):
                 # if key and values are already calculated
                 # we want only the last query position bias.
                 if past_kv is not None:
-                    position_bias = position_bias[:, :, -seq_length:, :]
+                    position_bias = position_bias[:, -seq_length:, :]
 
             logits += position_bias
 
@@ -402,8 +402,8 @@ class AttentionLayer(BaseLayer):
         # Shape: (query_length, key_length, num_heads).
         values = tf.reshape(values, [query_length, key_length, -1])
 
-        # Shape: (1, num_heads, query_length, key_length).
-        values = tf.expand_dims(tf.transpose(values, [2, 0, 1]), axis=0)
+        # Shape: (num_heads, query_length, key_length).
+        values = tf.transpose(values, [2, 0, 1])
         values = tf.cast(values, dtype=dtype)
         return values
 

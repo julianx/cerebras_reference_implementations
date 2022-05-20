@@ -409,7 +409,11 @@ class PyTorchBaseModel(ABC):
             if self.lr_scheduler and "lr_scheduler" in state:
                 self.lr_scheduler.load_state_dict(state["lr_scheduler"])
 
-        if self.mixed_precision and cm.is_wse_device():
+        if (
+            self.mixed_precision
+            and cm.is_wse_device()
+            and not is_pretrained_checkpoint
+        ):
             amp_state = state.get('amp')
             if amp_state:
                 amp.load_state_dict(amp_state)

@@ -924,10 +924,23 @@ PT_CAUSAL_LM_SAMPLE = r"""
         >>> logits = outputs.logits
 """
 
+PT_SUMMARIZATION_SAMPLE = r"""
+    Example::
+        >>> import torch
+        >>> from transformers import {tokenizer_class}, {model_class}
+        >>> tokenizer = {tokenizer_class}.from_pretrained('{checkpoint}')
+        >>> model = {model_class}.from_pretrained('{checkpoint}')
+        >>> inputs = tokenizer("Hello, my dog is cute", return_tensors="pt")
+        >>> outputs = model(**inputs, labels=inputs["input_ids"])
+        >>> loss = outputs.loss
+        >>> logits = outputs.logits
+"""
+
 PT_SAMPLE_DOCSTRINGS = {
     "SequenceClassification": PT_SEQUENCE_CLASSIFICATION_SAMPLE,
     "QuestionAnswering": PT_QUESTION_ANSWERING_SAMPLE,
     "TokenClassification": PT_TOKEN_CLASSIFICATION_SAMPLE,
+    "Summarization": PT_SUMMARIZATION_SAMPLE,
     "MultipleChoice": PT_MULTIPLE_CHOICE_SAMPLE,
     "MaskedLM": PT_MASKED_LM_SAMPLE,
     "LMHead": PT_CAUSAL_LM_SAMPLE,
@@ -1161,6 +1174,8 @@ def add_code_sample_docstrings(
             code_sample = sample_docstrings["TokenClassification"]
         elif "MultipleChoice" in model_class:
             code_sample = sample_docstrings["MultipleChoice"]
+        elif "Summarization" in model_class:
+            code_sample = sample_docstrings["Summarization"]
         elif "MaskedLM" in model_class or model_class in [
             "FlaubertWithLMHeadModel",
             "XLMWithLMHeadModel",

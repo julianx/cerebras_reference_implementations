@@ -48,7 +48,7 @@ from cerebras_reference_implementations.common.tf.run_utils import (
 CS1_MODES = ["train", "eval"]
 
 
-def create_arg_parser(default_model_dir):
+def create_arg_parser(default_model_dir, include_multireplica=False):
     """
     Create parser for command line args.
 
@@ -136,6 +136,13 @@ def create_arg_parser(default_model_dir):
         default=None,
         help="Checkpoint to initialize weights from.",
     )
+    if include_multireplica:
+        parser.add_argument(
+            "--multireplica",
+            action="store_true",
+            help="run multiple copies of the model data-parallel"
+            + " on the wafer at the same time.",
+        )
 
     return parser
 
@@ -168,6 +175,10 @@ def validate_params(params, cs1_modes):
             "To run this model on the Cerebras System, please use one of the following modes: "
             ", ".join(cs1_modes)
         )
+        assert not (
+            runconfig_params.get("multireplica")
+            and runconfig_params["mode"] != "train"
+        ), "--multireplica can only be used in train mode."
 
 
 def run(
@@ -296,7 +307,7 @@ def main():
     default_model_dir = os.path.join(
         os.path.dirname(os.path.abspath(__file__)), "model_dir"
     )
-    parser = create_arg_parser(default_model_dir)
+    parser = create_arg_parser(default_model_dir, include_multireplica=True)
     args = parser.parse_args(sys.argv[1:])
     params = get_params(args.params, mode=args.mode)
     run(

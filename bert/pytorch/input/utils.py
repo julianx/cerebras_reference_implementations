@@ -186,19 +186,20 @@ def create_masked_lm_predictions(
     masked_lm_mask = np.zeros((max_sequence_length,), dtype=np.int32)
 
     # Convert tokens to integer ids.
-    token_ids = tokenize(tokens)
-    input_ids[0 : len(token_ids)] = token_ids
-    attention_mask[0 : len(token_ids)] = 1
+    token_ids = tokenize(tokens[:max_sequence_length])
+    num_tokens = len(token_ids)
+    input_ids[0:num_tokens] = token_ids
+    attention_mask[0:num_tokens] = 1
 
     # Form predictions for the MLM task.
     num_to_predict = min(
         max_predictions_per_seq,
-        max(1, int(round(len(tokens) * masked_lm_prob))),
+        max(1, int(round(num_tokens * masked_lm_prob))),
     )
 
     # Track which tokens have been used.
     num_current_predictions = 0
-    token_indices = list(range(len(tokens)))
+    token_indices = list(range(num_tokens))
     rng.shuffle(token_indices)
 
     masked_token_indices = []
@@ -321,7 +322,7 @@ def convert_to_unicode(text):
     """
 
     Converts `text` to unicode, assuming utf-8 input.
-    Returns text encoded in a way suitable for print.
+    Returns text encoded in a way suitable for print or `tf.compat.v1.logging`.
     """
     if isinstance(text, str):
         return text

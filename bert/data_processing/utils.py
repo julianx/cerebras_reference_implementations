@@ -396,3 +396,25 @@ def get_label_id_map(label_vocab_file):
             label_map = json.load(fh)
 
     return label_map
+
+
+def convert_str_to_int_list(s):
+    """
+    Converts a string (e.g. from parsing CSV) of the form
+        "[1, 5, 7, 2]"
+    to a list of integers.
+    """
+    assert s.startswith("[")
+    assert s.endswith("]")
+    x = s.strip("[]")
+    x = x.split(",")
+    return [int(y.strip()) for y in x]
+
+
+def pad_input_sequence(input_sequence, padding=0, max_sequence_length=512):
+    input_sequence_array = padding * np.ones(
+        max_sequence_length, dtype=np.int32
+    )
+    end_idx = min(max_sequence_length, len(input_sequence))
+    input_sequence_array[:end_idx] = list(input_sequence[:end_idx])
+    return input_sequence_array

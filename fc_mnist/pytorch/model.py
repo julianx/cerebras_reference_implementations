@@ -25,7 +25,7 @@ from cerebras_reference_implementations.common.pytorch.PyTorchBaseModel import (
 
 class MNIST(nn.Module):
     def __init__(self, model_params):
-        super(MNIST, self).__init__()
+        super().__init__()
         self.loss_fn = nn.NLLLoss()
         self.fc_layers = []
         input_size = 784

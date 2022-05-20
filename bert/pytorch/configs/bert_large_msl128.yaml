@@ -1,32 +1,35 @@
 # BERT-Large, MSL:128
 
 train_input:
-    data_processor: "BertCSVDataProcessor"
-    data_dir: "./owt_pretraining/train_512k_uncased_msl128/"
-    vocab_file: "../vocab/google_research_uncased_L-12_H-768_A-12.txt"
+    data_processor: "BertCSVDynamicMaskDataProcessor"
+    data_dir: "./owt_pretraining_csv/train_512k_uncased_msl128/"
+    vocab_file: "../../vocab/google_research_uncased_L-12_H-768_A-12.txt"
     max_sequence_length: 128
     max_predictions_per_seq: 20
-    batch_size: 256 # for GPU(16GB) set batch_size: 16
-                    # 16 * 16 = 256 with grad_accum_steps: 16
+    batch_size: 256 # for GPU(16GB) set batch_size: 64
+                    # 64 * 4 = 256 with grad_accum_steps: 4
     whole_word_masking: False
     do_lower: True
     masked_lm_prob: 0.15
     shuffle: True
+    shuffle_seed: 1
     num_workers: 8
     prefetch_factor: 10
     persistent_workers: True
 
 eval_input:
-    data_processor: "BertCSVDataProcessor"
+    data_processor: "BertCSVDynamicMaskDataProcessor"
     data_dir: "./owt_pretraining_csv/val_uncased_msl128/"
-    vocab_file: "../vocab/google_research_uncased_L-12_H-768_A-12.txt"
+    vocab_file: "../../vocab/google_research_uncased_L-12_H-768_A-12.txt"
     max_sequence_length: 128
     max_predictions_per_seq: 20
-    batch_size: 256 # for GPU(16GB) set batch_size: 16
+    batch_size: 256 # for GPU(16GB) set batch_size: 64
     whole_word_masking: False
     do_lower: True
     masked_lm_prob: 0.15
-    num_workers: 2
+    shuffle: False
+    shuffle_seed: 1 # also for deterministic masking
+    num_workers: 1
     prefetch_factor: 10
     persistent_workers: True
 
