@@ -22,4 +22,3 @@ from .cb_metric import (
 )
 from .fbeta_score import FBetaScoreMetric
 from .perplexity import PerplexityMetric
-from .rouge_score import RougeScoreMetric
