@@ -273,6 +273,14 @@ class BertCSVDynamicMaskDataProcessor(torch.utils.data.IterableDataset):
             # ["tokens", "segment_ids", "is_random_next"].
             tokens = parse_text(data_row["tokens"], do_lower=self.do_lower)
 
+            if self.disable_nsp:
+                # truncate tokens to MSL
+                tokens = tokens[: self.max_sequence_length]
+            else:
+                assert (
+                    len(tokens) <= self.max_sequence_length
+                ), "When using NSP head, make sure that len(tokens) <= MSL."
+
             (
                 input_ids,
                 labels,
@@ -349,7 +357,7 @@ class BertCSVDynamicMaskDataProcessor(torch.utils.data.IterableDataset):
         for batch in batched_dataset:
             if self.dynamic_mlm_scale:
                 scale = self.batch_size / torch.sum(batch["masked_lm_mask"])
-                batch["mlm_loss_scale"] = scale.expand(
-                    self.batch_size, 1
-                ).half()
+                batch["mlm_loss_scale"] = scale.expand(self.batch_size, 1).to(
+                    self.mp_type
+                )
             yield batch

@@ -144,6 +144,11 @@ def get_parser(run_dir: Optional[str] = None) -> argparse.ArgumentParser:
         help="Path to .yaml file with model parameters",
     )
     parser.add_argument(
+        "--config",
+        default=None,
+        help="Specifies a specific key of the params file to return",
+    )
+    parser.add_argument(
         "-m",
         "--mode",
         required=True,
@@ -157,6 +162,12 @@ def get_parser(run_dir: Optional[str] = None) -> argparse.ArgumentParser:
         help="Enables compile only workflow",
     )
     parser.add_argument(
+        "--multireplica",
+        action="store_true",
+        default=None,
+        help="Enables multireplica mode",
+    )
+    parser.add_argument(
         "--fabric_config_file",
         type=str,
         default=None,
@@ -167,6 +178,12 @@ def get_parser(run_dir: Optional[str] = None) -> argparse.ArgumentParser:
         "--model_dir",
         default=default_model_dir,
         help="Model directory where checkpoints will be written.",
+    )
+    parser.add_argument(
+        "-c",
+        "--compile_dir",
+        default=None,
+        help="Compile directory where compile artifacts will be written.",
     )
     parser.add_argument(
         "--checkpoint_path",
@@ -192,9 +209,7 @@ def get_parser(run_dir: Optional[str] = None) -> argparse.ArgumentParser:
 
 
 def get_params_from_args(
-    run_dir: Optional[str] = None,
-    argv: Optional[List] = None,
-    config: Optional[str] = None,
+    run_dir: Optional[str] = None, argv: Optional[List] = None,
 ) -> dict:
     """
     Parse the arguments and get the params dict from the resulting args
@@ -202,11 +217,10 @@ def get_params_from_args(
     Args:
         run_dir: The path to the `run.py` file
         argv: The args to be parse. Defaults to sys.argv if not provided
-        config: Specifies a specific key of the params file to return
     """
     parser = get_parser(run_dir)
     args = parser.parse_args(argv if argv else sys.argv[1:])
-    params = get_params(args.params, config)
+    params = get_params(args.params, args.config)
     update_params_from_args(args, params["runconfig"])
     return params
 
@@ -323,6 +337,24 @@ def to_cpu(tensor):
     )
 
 
+def to_tensor(value):
+    """
+    If the provided value is a Python int or float, it converts them
+    into PyTorch Tensors of type int32 and float32 respectively.
+    Otherwise, it just returns the value.
+    """
+    if isinstance(value, int):
+        return torch.tensor(value, dtype=torch.int32)
+    elif isinstance(value, float):
+        return torch.tensor(value, dtype=torch.float32)
+    elif isinstance(value, tuple):
+        return tuple(map(to_tensor, value))
+    elif isinstance(value, list):
+        return list(map(to_tensor, value))
+    else:
+        return value
+
+
 def setup_logging(chief_logging_level: str, streamer_logging_level: str):
     from cerebras_reference_implementations.common.pytorch import cb_model as cm
 
@@ -368,9 +400,9 @@ def setup_logging(chief_logging_level: str, streamer_logging_level: str):
         ), f"Invalid logging level: {level}"
         return logging.getLevelName(level)
 
-    if cm.is_master_ordinal():
+    if cm.is_master_ordinal() or cm.is_sync_mode():
         level = get_level_name(chief_logging_level or "info")
-        logging.basicConfig(level=level, handlers=[handler])
     else:
         level = get_level_name(streamer_logging_level or "error")
-        logging.basicConfig(level=level, handlers=[handler])
+
+    logging.basicConfig(level=level, handlers=[handler])

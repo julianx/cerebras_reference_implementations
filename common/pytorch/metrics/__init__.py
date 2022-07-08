@@ -12,13 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .accuracy import AccuracyMetric
-from .cb_metric import (
+from cerebras_reference_implementations.common.pytorch.metrics.accuracy import (
+    AccuracyMetric,
+)
+from cerebras_reference_implementations.common.pytorch.metrics.cb_metric import (
     CBMetric,
     DeviceOutputs,
     compute_all_metrics,
     get_all_metrics,
     reset_all_metrics,
 )
-from .fbeta_score import FBetaScoreMetric
-from .perplexity import PerplexityMetric
+from cerebras_reference_implementations.common.pytorch.metrics.fbeta_score import (
+    FBetaScoreMetric,
+)
+from cerebras_reference_implementations.common.pytorch.metrics.perplexity import (
+    PerplexityMetric,
+)
+from cerebras_reference_implementations.common.pytorch.metrics.rouge_score import (
+    RougeScoreMetric,
+)

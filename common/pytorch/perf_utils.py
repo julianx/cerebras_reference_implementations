@@ -23,7 +23,6 @@ import cerebras.framework.torch as cbtorch
 import cerebras.framework.torch.core.cb_model as cm
 
 # XLA counter keys used to track various metrics
-KEY_COMPILE_DELTAT = "CerebrasCompileDeltaT"
 KEY_COMPILE_TIME = "CerebrasCompileTimeMs"
 KEY_PROGRAMMING_TIME = "CerebrasProgrammingTimeNs"
 KEY_SYSTEM_PERF = "CerebrasSystemEstSamples"
@@ -37,7 +36,6 @@ class PerfData:
         total_samples: Total number of samples processes.
         total_time: Total time spent processing those samples.
         samples_per_sec: Throuput of processing those samples.
-        delta_t: Fabric compute delta T.
         compile_time: Time spent compiling the model.
         programming_time: Time spent programming the fabric.
         est_samples_per_sec: Estimated throughput based on compile and fabric.
@@ -46,7 +44,6 @@ class PerfData:
     total_samples: int = 0
     total_time: float = 0.0
     samples_per_sec: float = 0.0
-    delta_t: int = 0
     compile_time: float = 0.0
     programming_time: float = 0.0
     est_samples_per_sec: float = 0.0
@@ -60,7 +57,6 @@ class PerfData:
         self.total_samples += other.total_samples
         if self.total_time == 0.0:
             self.total_time = other.total_time
-        self.delta_t = max(self.delta_t, other.delta_t)
         self.compile_time = max(self.compile_time, other.compile_time)
         self.programming_time = max(
             self.programming_time, other.programming_time
@@ -110,7 +106,6 @@ def _collect_perf_data(tracker: cm.RateTracker):
     """
     pd = PerfData()
 
-    pd.delta_t = _get_optional_counter(KEY_COMPILE_DELTAT)
     pd.compile_time = _get_optional_counter(KEY_COMPILE_TIME) * 1e-3
     pd.programming_time = _get_optional_counter(KEY_PROGRAMMING_TIME) * 1e-9
     pd.est_samples_per_sec = _get_optional_counter(KEY_SYSTEM_PERF)

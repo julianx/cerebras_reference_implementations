@@ -17,6 +17,8 @@ import os
 from typing import Callable, Optional
 
 import torch
+import yaml
+from cerebras_reference_implementations.common.pytorch import cb_model as cm
 from cerebras_reference_implementations.common.pytorch import modes
 from cerebras_reference_implementations.common.pytorch.pytorch_base_runner import (
     PyTorchBaseRunner,
@@ -76,8 +78,18 @@ def run(
         runconfig_params.get("streamer_logging"),
     )
 
-    # Initialize the dataloaders depending on the mode
+    # Save params.yaml only in master task
     mode = runconfig_params["mode"]
+    # using this dir structure to keep in sync with runners
+    summary_dir = os.path.join(params["runconfig"]["model_dir"], f"{mode}")
+    os.makedirs(summary_dir, exist_ok=True)
+    if cm.is_master_ordinal():
+        with open(
+            os.path.join(summary_dir, f"params_{mode}.yaml"), "w+",
+        ) as _fout:
+            yaml.dump(params, _fout, default_flow_style=False)
+
+    # Initialize the dataloaders depending on the mode
     if mode in (modes.TRAIN, modes.TRAIN_AND_EVAL):
         assert train_data_fn, "Train dataloader function has not been provided"
         train_loader: torch.utils.data.Dataloader = train_data_fn(params)

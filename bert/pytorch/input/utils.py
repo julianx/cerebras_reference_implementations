@@ -79,38 +79,38 @@ def parse_text(text, do_lower):
     )
 
 
-def shard_and_shuffle_data(csv_files_per_task, shuffle, shuffle_seed):
+def shard_and_shuffle_data(files_per_task, shuffle, shuffle_seed):
     """
     Shard the data across the processes.
 
-    :param: list csv_files_per_task: List of csv files with input data.
+    :param: list files_per_task: List of files with input data.
     :param bool shuffle: Whether to shuffle data or not.
     :param bool shuffle_seed: Seed to use for shuffling.
     :return: A tuple with:
         * int processed_buffers: Counter for how many buffers of data processed so far.
-        * list csv_files_per_worker: Files to process for the input worker.
+        * list files_per_worker: Files to process for the input worker.
         * int shuffle_seed: Updated shuffle seed.
         * random.Random rng: Object with shuffle function.
     """
 
     worker_info = torch.utils.data.get_worker_info()
-    csv_files_per_task_per_worker = []
+    files_per_task_per_worker = []
 
     if worker_info is not None:
         worker_id = worker_info.id
         num_workers = worker_info.num_workers
 
-        assert num_workers <= len(csv_files_per_task), (
+        assert num_workers <= len(files_per_task), (
             f"Number of processes should be less than number of files, "
-            f"Got `num_workers` equal to {num_workers} and `num_files` equal to {len(csv_files_per_task)}."
+            f"Got `num_workers` equal to {num_workers} and `num_files` equal to {len(files_per_task)}."
         )
 
         # Gather files for the input worker based in the file index and
         # number of workers.
-        for file_index, csv_len_start_id in enumerate(csv_files_per_task):
+        for file_index, file_len_start_id in enumerate(files_per_task):
             if file_index % num_workers == worker_id:
-                csv_files_per_task_per_worker.append(
-                    csv_len_start_id
+                files_per_task_per_worker.append(
+                    file_len_start_id
                 )  # Tuple of csv_filepath, num_examples_to consider, start_idx
 
         # Use a unique seed for each worker.
@@ -118,16 +118,16 @@ def shard_and_shuffle_data(csv_files_per_task, shuffle, shuffle_seed):
             shuffle_seed += worker_id + 1
     else:
         # num_worker = 0 case
-        csv_files_per_task_per_worker = csv_files_per_task
+        files_per_task_per_worker = files_per_task
 
     rng = random.Random(shuffle_seed)
 
     processed_buffers = 0
 
     if shuffle:
-        rng.shuffle(csv_files_per_task_per_worker)
+        rng.shuffle(files_per_task_per_worker)
 
-    return processed_buffers, csv_files_per_task_per_worker, shuffle_seed, rng
+    return processed_buffers, files_per_task_per_worker, shuffle_seed, rng
 
 
 def create_masked_lm_predictions(
@@ -186,10 +186,10 @@ def create_masked_lm_predictions(
     masked_lm_mask = np.zeros((max_sequence_length,), dtype=np.int32)
 
     # Convert tokens to integer ids.
-    token_ids = tokenize(tokens[:max_sequence_length])
+    token_ids = tokenize(tokens)
     num_tokens = len(token_ids)
-    input_ids[0:num_tokens] = token_ids
-    attention_mask[0:num_tokens] = 1
+    input_ids[:num_tokens] = token_ids
+    attention_mask[:num_tokens] = 1
 
     # Form predictions for the MLM task.
     num_to_predict = min(

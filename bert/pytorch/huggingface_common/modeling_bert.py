@@ -211,6 +211,7 @@ class BertEmbeddings(nn.Module):
         self.position_embedding_type = getattr(
             config, "position_embedding_type", "absolute"
         )
+
         self.register_buffer(
             "position_ids",
             torch.arange(config.max_position_embeddings).expand((1, -1)),
@@ -274,21 +275,7 @@ class BertSelfAttention(nn.Module):
         )
         self.all_head_size = self.num_attention_heads * self.attention_head_size
 
-        self.query = nn.Linear(
-            config.hidden_size,
-            self.all_head_size,
-            bias=config.use_projection_bias_in_attention,
-        )
-        self.key = nn.Linear(
-            config.hidden_size,
-            self.all_head_size,
-            bias=config.use_projection_bias_in_attention,
-        )
-        self.value = nn.Linear(
-            config.hidden_size,
-            self.all_head_size,
-            bias=config.use_projection_bias_in_attention,
-        )
+        self.define_bert_attention_layers(config)
 
         self.dropout = nn.Dropout(config.attention_probs_dropout_prob)
         self.position_embedding_type = getattr(
@@ -304,6 +291,23 @@ class BertSelfAttention(nn.Module):
             )
 
         self.is_decoder = config.is_decoder
+
+    def define_bert_attention_layers(self, config):
+        self.query = nn.Linear(
+            config.hidden_size,
+            self.all_head_size,
+            bias=config.use_projection_bias_in_attention,
+        )
+        self.key = nn.Linear(
+            config.hidden_size,
+            self.all_head_size,
+            bias=config.use_projection_bias_in_attention,
+        )
+        self.value = nn.Linear(
+            config.hidden_size,
+            self.all_head_size,
+            bias=config.use_projection_bias_in_attention,
+        )
 
     def transpose_for_scores(self, x):
         new_x_shape = x.size()[:-1] + (
@@ -323,6 +327,7 @@ class BertSelfAttention(nn.Module):
         past_key_value=None,
         output_attentions=False,
     ):
+
         mixed_query_layer = self.query(hidden_states)
 
         # If this is instantiated as a cross-attention module, the keys
@@ -434,13 +439,14 @@ class BertSelfAttention(nn.Module):
         context_layer = context_layer.view(*new_context_layer_shape)
 
         outputs = (
-            (context_layer, attention_probs)
+            (context_layer, attention_probs,)
             if output_attentions
             else (context_layer,)
         )
 
         if self.is_decoder:
             outputs = outputs + (past_key_value,)
+
         return outputs
 
 
@@ -543,7 +549,9 @@ class BertIntermediate(nn.Module):
 class BertOutput(nn.Module):
     def __init__(self, config):
         super().__init__()
-        self.dense = nn.Linear(config.intermediate_size, config.hidden_size)
+        self.dense = nn.Linear(
+            config.intermediate_size, config.hidden_size, config.use_ffn_bias
+        )
         self.LayerNorm = nn.LayerNorm(
             config.hidden_size, eps=config.layer_norm_eps
         )
@@ -564,11 +572,13 @@ class BertLayer(nn.Module):
         self.attention = BertAttention(config)
         self.is_decoder = config.is_decoder
         self.add_cross_attention = config.add_cross_attention
+
         if self.add_cross_attention:
             assert (
                 self.is_decoder
             ), f"{self} should be used as a decoder model if cross attention is added"
             self.crossattention = BertAttention(config)
+
         self.intermediate = BertIntermediate(config)
         self.output = BertOutput(config)
 
@@ -587,6 +597,7 @@ class BertLayer(nn.Module):
             past_key_value[:2] if past_key_value is not None else None
         )
 
+        # output: (attention_output, context_layer, attention_probs, past_key_value)
         self_attention_outputs = self.attention(
             hidden_states,
             attention_mask,
@@ -594,6 +605,7 @@ class BertLayer(nn.Module):
             output_attentions=output_attentions,
             past_key_value=self_attn_past_key_value,
         )
+
         attention_output = self_attention_outputs[0]
 
         # if decoder, the last output is tuple of self-attn cache
@@ -615,6 +627,7 @@ class BertLayer(nn.Module):
             cross_attn_past_key_value = (
                 past_key_value[-2:] if past_key_value is not None else None
             )
+
             cross_attention_outputs = self.crossattention(
                 attention_output,
                 attention_mask,
@@ -624,6 +637,7 @@ class BertLayer(nn.Module):
                 cross_attn_past_key_value,
                 output_attentions,
             )
+
             attention_output = cross_attention_outputs[0]
             outputs = (
                 outputs + cross_attention_outputs[1:-1]
@@ -731,6 +745,7 @@ class BertEncoder(nn.Module):
                 )
 
             hidden_states = layer_outputs[0]
+
             if use_cache:
                 next_decoder_cache += (layer_outputs[-1],)
             if output_attentions:
@@ -873,18 +888,74 @@ class BertPreTrainedModel(PreTrainedModel):
         _a = _std * -2.0
         _b = _std * 2.0
 
-        if isinstance(module, nn.Linear):
+        if isinstance(module, BertEmbeddings):
+            trunc_normal_(
+                module.word_embeddings.weight.data,
+                mean=0.0,
+                std=_std,
+                a=_a,
+                b=_b,
+            )
+            trunc_normal_(
+                module.position_embeddings.weight.data,
+                mean=0.0,
+                std=_std,
+                a=_a,
+                b=_b,
+            )
+            trunc_normal_(
+                module.token_type_embeddings.weight.data,
+                mean=0.0,
+                std=_std,
+                a=_a,
+                b=_b,
+            )
+            if self.config.pad_token_id is not None:
+                module.word_embeddings.weight.data[
+                    self.config.pad_token_id
+                ].zero_()
+                module.position_embeddings.weight.data[
+                    self.config.pad_token_id
+                ].zero_()
+                module.token_type_embeddings.weight.data[
+                    self.config.pad_token_id
+                ].zero_()
+
+        elif isinstance(module, BertSelfAttention):
+            trunc_normal_(
+                module.query.weight.data, mean=0.0, std=_std, a=_a, b=_b,
+            )
+            trunc_normal_(
+                module.key.weight.data, mean=0.0, std=_std, a=_a, b=_b,
+            )
+            trunc_normal_(
+                module.value.weight.data, mean=0.0, std=_std, a=_a, b=_b,
+            )
+            if module.query.bias is not None:
+                module.query.bias.data.zero_()
+                module.key.bias.data.zero_()
+                module.value.bias.data.zero_()
+
+            if hasattr(module, "distance_embedding"):
+                trunc_normal_(
+                    module.distance_embedding.weight.data,
+                    mean=0.0,
+                    std=_std,
+                    a=_a,
+                    b=_b,
+                )
+                if module.padding_idx is not None:
+                    module.distance_embedding.weight.data[
+                        module.padding_idx
+                    ].zero_()
+
+        elif isinstance(module, nn.Linear):
             trunc_normal_(
                 module.weight.data, mean=0.0, std=_std, a=_a, b=_b,
             )
             if module.bias is not None:
                 module.bias.data.zero_()
-        elif isinstance(module, nn.Embedding):
-            trunc_normal_(
-                module.weight.data, mean=0.0, std=_std, a=_a, b=_b,
-            )
-            if module.padding_idx is not None:
-                module.weight.data[module.padding_idx].zero_()
+
         elif isinstance(module, nn.LayerNorm):
             module.bias.data.zero_()
             module.weight.data.fill_(1.0)
@@ -1154,6 +1225,7 @@ class BertModel(BertPreTrainedModel):
             inputs_embeds=inputs_embeds,
             past_key_values_length=past_key_values_length,
         )
+
         encoder_outputs = self.encoder(
             embedding_output,
             attention_mask=extended_attention_mask,
@@ -1166,6 +1238,7 @@ class BertModel(BertPreTrainedModel):
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
         )
+
         sequence_output = encoder_outputs[0]
         pooled_output = (
             self.pooler(sequence_output) if self.pooler is not None else None

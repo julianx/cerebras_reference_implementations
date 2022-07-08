@@ -418,3 +418,58 @@ def pad_input_sequence(input_sequence, padding=0, max_sequence_length=512):
     end_idx = min(max_sequence_length, len(input_sequence))
     input_sequence_array[:end_idx] = list(input_sequence[:end_idx])
     return input_sequence_array
+
+
+def get_files_in_metadata(metadata_filepaths):
+    """
+    Function to read the files in metadata file
+    provided as input to data generation scripts.
+
+    :param metadata_filepaths: path/s to metadata files
+    :returns List input_files: Contents of 
+        metadata files.
+    """
+
+    if isinstance(metadata_filepaths, str):
+        metadata_filepaths = [metadata_filepaths]
+
+    input_files = []
+    for _file in metadata_filepaths:
+        with open(_file, "r") as _fin:
+            input_files.extend(_fin.readlines())
+    input_files = [x.strip() for x in input_files if x]
+    return input_files
+
+
+def split_list(l, n):
+    """
+    Splits list/string into n sized chunks.
+
+    :param List[str] l: List or string to split.
+    :param int n: Number of chunks to split to.
+    :returns List[List]: List of lists 
+        containing split list/string.
+    """
+    return [l[i : i + n] for i in range(0, len(l), n)]
+
+
+def get_vocab(vocab_file_path, do_lower):
+    """
+    Function to generate vocab from provided
+    vocab_file_path.
+
+    :param str vocab_file_path: Path to vocab file
+    :param bool do_lower: If True, convert vocab words to
+        lower case.
+    :returns List[str]: list containing vocab words.
+    """
+    vocab = []
+    with open(vocab_file_path, 'r') as reader:
+        for line in reader:
+            token = convert_to_unicode(line)
+            if not token:
+                break
+            token = token.strip()
+            vocab.append(token)
+    vocab = list(map(lambda token: token.lower(), vocab)) if do_lower else vocab
+    return vocab

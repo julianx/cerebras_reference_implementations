@@ -30,7 +30,9 @@ The PubMed dataset creation for BERT pre-training can be broken down into 4 part
 ### **Download**
 In this stage, the dataset files are downloaded from the hyperlinks above and extracted to a subfolder. 
 
-Please refer to code in [Downloader.py](./preprocess/Downloader.py) for more details
+Please refer to code in [Downloader.py](./preprocess/Downloader.py) for more details.
+
+Please clone the `pubmed_parser` code from [this repo](https://github.com/titipata/pubmed_parser) in to the [preprocess](./preprocess/) directory.
 
 ### **Format**
 In this stage, the raw data from extracted files is written to text files with one document/abstract in a single line and a newline separating documents. The filesize limit is set to 5GB inorder to ensure that files can be loaded into memory during subsequent stages. 

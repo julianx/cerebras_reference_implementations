@@ -105,7 +105,7 @@ def parse_args():
     parser.add_argument(
         "--dupe_factor",
         type=int,
-        default=10,
+        default=1,
         help="number of times to duplicate the input data (with "
         "different masks)",
     )

@@ -59,6 +59,7 @@ class GptJBlock(BaseLayer):
             dtype=self.dtype_policy,
             name="ln_1",
         )
+
         self.attn = GptJAttentionLayer(
             hidden_size=hidden_size,
             num_heads=num_heads,
@@ -96,23 +97,20 @@ class GptJBlock(BaseLayer):
         inputs,
         layer_past=None,
         attention_mask=None,
-        head_mask=None,
         use_cache=False,
         training=True,
         **kwargs,
     ):
         residual = inputs
         hidden_states = self.ln_1(inputs)
-        attn_states, present = self.attn(
+        attention_outputs, present = self.attn(
             hidden_states,
             layer_past=layer_past,
             attention_mask=attention_mask,
-            head_mask=head_mask,
             use_cache=use_cache,
             training=training,
         )
+        feed_forward_outputs = self.mlp(hidden_states, training=training)
 
-        feed_forward_output = self.mlp(hidden_states, training=training)
-        output = residual + attn_states + feed_forward_output
-
+        output = residual + attention_outputs + feed_forward_outputs
         return (output, present if use_cache else None)

@@ -139,6 +139,9 @@ class PyTorchBaseModel(ABC):
         configured.
         """
 
+    def trainable_named_parameters(self):
+        return self.model.named_parameters()
+
     def _configure_optimizer(self, oparams: dict):
         """
         Configure an optimizer based on the params and return it
@@ -167,9 +170,10 @@ class PyTorchBaseModel(ABC):
                 self.model.parameters(),
                 lr=learning_rate,
                 momentum=oparams["momentum"],
+                weight_decay=oparams.get("weight_decay_rate", 0),
             )
         elif optimizer_type == "AdamW":
-            param_optimizer = list(self.model.named_parameters())
+            param_optimizer = list(self.trainable_named_parameters())
             no_decay = oparams.get(
                 "exclude_from_weight_decay",
                 ["bias", "LayerNorm.bias", "LayerNorm.weight"],
@@ -197,6 +201,7 @@ class PyTorchBaseModel(ABC):
                 lr=learning_rate,
                 betas=(oparams.get("beta1", 0.9), oparams.get("beta2", 0.999)),
                 correct_bias=oparams.get("correct_bias", False),
+                eps=oparams.get("eps", 1e-6),
             )
         else:
             raise ValueError(

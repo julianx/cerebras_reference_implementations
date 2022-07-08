@@ -13,6 +13,7 @@
 # limitations under the License.
 
 
+import numpy as np
 import tensorflow as tf
 from cerebras_reference_implementations.common.tf.layers.EmbeddingLayer import (
     EmbeddingLayer,

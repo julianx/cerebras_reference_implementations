@@ -119,22 +119,29 @@ class GptJAttentionLayer(BaseLayer):
         self.k_proj = DenseLayer(**proj_params, name="k_proj")
         self.v_proj = DenseLayer(**proj_params, name="v_proj")
 
-        self.attn_dropout = DropoutLayer(
-            rate=attn_dropout_rate,
-            seed=dropout_seed,
-            boundary_casting=boundary_casting,
-            tf_summary=tf_summary,
-            dtype=self.dtype_policy,
-            name="attn_dropout",
-        )
-        self.resid_dropout = DropoutLayer(
-            rate=residual_dropout_rate,
-            seed=dropout_seed,
-            boundary_casting=boundary_casting,
-            tf_summary=tf_summary,
-            dtype=self.dtype_policy,
-            name="resid_dropout",
-        )
+        if attn_dropout_rate > 0.0:
+            self.attn_dropout = DropoutLayer(
+                rate=attn_dropout_rate,
+                seed=dropout_seed,
+                boundary_casting=boundary_casting,
+                tf_summary=tf_summary,
+                dtype=self.dtype_policy,
+                name="attn_dropout",
+            )
+        else:
+            self.attn_dropout = None
+
+        if residual_dropout_rate > 0.0:
+            self.resid_dropout = DropoutLayer(
+                rate=residual_dropout_rate,
+                seed=dropout_seed,
+                boundary_casting=boundary_casting,
+                tf_summary=tf_summary,
+                dtype=self.dtype_policy,
+                name="resid_dropout",
+            )
+        else:
+            self.resid_dropout = None
 
         output_initializer = initializer
         if output_layer_initializer is not None:
@@ -159,7 +166,6 @@ class GptJAttentionLayer(BaseLayer):
         hidden_states,
         attention_mask=None,
         layer_past=None,
-        head_mask=None,
         use_cache=False,
         training=True,
         **kwargs,
@@ -180,8 +186,6 @@ class GptJAttentionLayer(BaseLayer):
             offset = tf.shape(input=k_past)[-2]
             seq_len += offset
 
-        # -1 means skip this RoPE code completely; only for bring-up purposes
-        if self.rotary_dim != -1:
             if self.rotary_dim is not None:
                 k_rot = key[:, :, :, : self.rotary_dim]
                 k_pass = key[:, :, :, self.rotary_dim :]
@@ -221,30 +225,18 @@ class GptJAttentionLayer(BaseLayer):
             value = tf.concat([v_past, value], axis=-2)
 
         attn_output = self._attn(
-            query,
-            key,
-            value,
-            attention_mask,
-            head_mask,
-            layer_past,
-            training=training,
+            query, key, value, attention_mask, layer_past, training=training,
         )
 
         attn_output = self._combine_heads(attn_output)
         attn_output = self.out_proj(attn_output)
-        attn_output = self.resid_dropout(attn_output, training=training)
+        if self.resid_dropout is not None:
+            attn_output = self.resid_dropout(attn_output, training=training)
 
         return (attn_output, present if use_cache else None)
 
     def _attn(
-        self,
-        query,
-        key,
-        value,
-        mask=None,
-        head_mask=None,
-        layer_past=None,
-        training=True,
+        self, query, key, value, mask=None, layer_past=None, training=True,
     ):
         query_length, key_length = (
             tf.shape(input=query)[-2],
@@ -327,10 +319,8 @@ class GptJAttentionLayer(BaseLayer):
         attn_weights = tf.cast(
             tf.nn.softmax(tf.cast(attn_weights, tf.float32)), self.compute_dtype
         )
-        attn_weights = self.attn_dropout(attn_weights, training=training)
-
-        if head_mask is not None:
-            attn_weights = attn_weights * head_mask
+        if self.attn_dropout is not None:
+            attn_weights = self.attn_dropout(attn_weights, training=training)
 
         attn_output = tf.matmul(attn_weights, value)
         return attn_output
@@ -341,38 +331,29 @@ class GptJAttentionLayer(BaseLayer):
         values during the matrix multiplication.
 
         Args:
-            x: A tensor with shape ``[batch_size, seq_length, hidden_size]`` or
-                with shape ``[batch_size, blocks, block_length, hidden_size]``
+            x: A tensor with shape ``[batch_size, seq_length, hidden_size]``
 
         Returns:
-            A tensor with shape ``[batch_size, num_heads, seq_length, hidden_size/num_heads]``
-            or with shape ``[batch_size, blocks, num_heads, block_length, hidden_size/num_heads]``
+            If rotary is true, a tensor with shape
+            ``[batch_size, seq_length, num_heads, hidden_size/num_heads]``
+            else, a tensor with shape
+            ``[batch_size, num_heads, seq_length, hidden_size/num_heads]``
+
         """
+
+        assert (
+            len(x.shape) == 3
+        ), f"Input tensor rank should be one of 3, but is: {len(x.shape)}"
 
         # Calculate depth of last dimension after it has been split.
         depth = self.hidden_size // self.num_heads
         batch_size = tf.shape(input=x)[0]
-
-        if len(x.shape) == 4:
-            blocks = tf.shape(input=x)[1]
-            block_length = tf.shape(input=x)[2]
-            x = tf.reshape(
-                x, [batch_size, blocks, block_length, self.num_heads, depth]
-            )
-        elif len(x.shape) == 3:
-            seq_length = tf.shape(input=x)[1]
-            x = tf.reshape(x, [batch_size, seq_length, self.num_heads, depth])
-        else:
-            raise ValueError(
-                f"Input tensor rank should be one of [3, 4], but is: {len(x.shape)}"
-            )
+        seq_length = tf.shape(input=x)[1]
+        x = tf.reshape(x, [batch_size, seq_length, self.num_heads, depth])
 
         # Transpose the result if not rotary
         if rotary:
             return x
-        elif len(x.shape) == 5:
-            return tf.transpose(a=x, perm=[0, 1, 3, 2, 4])
-
         return tf.transpose(a=x, perm=[0, 2, 1, 3])
 
     def _combine_heads(self, x):
@@ -380,29 +361,17 @@ class GptJAttentionLayer(BaseLayer):
 
         Args:
             x: A tensor ``[batch_size, num_heads, seq_length, idden_size/num_heads]``
-                or ``[batch_size, blocks, num_heads, block_length, hidden_size/num_heads]``
 
         Returns:
-            A tensor with shape ``[batch_size, seq_length, hidden_size]`` or with
-            shape ``[batch_size, blocks, block_length, hidden_size]``
+            A tensor with shape ``[batch_size, seq_length, hidden_size]``
         """
 
-        if len(x.shape) == 5:
-            x = tf.transpose(a=x, perm=[0, 1, 3, 2, 4])
-        elif len(x.shape) == 4:
-            x = tf.transpose(a=x, perm=[0, 2, 1, 3])
-        else:
-            raise ValueError(
-                f"Input tensor rank should be one of [4, 5], but is: {len(x.shape)}"
-            )
+        assert (
+            len(x.shape) == 4
+        ), f"Input tensor rank should be one of 4, but is: {len(x.shape)}"
 
+        # Transpose and reshape tensors
+        x = tf.transpose(a=x, perm=[0, 2, 1, 3])
         batch_size = tf.shape(input=x)[0]
-        if len(x.shape) == 5:
-            blocks = tf.shape(input=x)[1]
-            block_length = tf.shape(input=x)[2]
-            return tf.reshape(
-                x, [batch_size, blocks, block_length, self.hidden_size]
-            )
-
         seq_length = tf.shape(input=x)[1]
         return tf.reshape(x, [batch_size, seq_length, self.hidden_size])

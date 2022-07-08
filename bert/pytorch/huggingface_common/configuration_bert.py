@@ -107,6 +107,7 @@ class BertConfig(PretrainedConfig):
         use_ffn_bias_in_mlm (:obj:`bool`, `optional`, defaults to :obj:`True`):
             If True, bias is used in the dense layer in the mlm head.
 
+
     Examples::
 
         >>> from transformers import BertModel, BertConfig

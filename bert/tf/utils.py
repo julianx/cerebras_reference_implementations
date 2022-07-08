@@ -243,10 +243,22 @@ def set_defaults(params, mode=None):
 def get_custom_stack_params(params):
     stack_params = {}
     runconfig_params = params["runconfig"]
-    if runconfig_params["mode"] == "eval" or runconfig_params.get(
-        "multireplica"
-    ):
-        stack_params["ir_mode"] = "xla-cirh-all"
+
+    if params["model"].get("multireplica"):
+        runconfig_params["multireplica"] = True
+
+    if "ir_mode" in runconfig_params:
+        stack_params["ir_mode"] = runconfig_params["ir_mode"]
+    else:
+        stack_params["ir_mode"] = "mlir-cirh"
+
+        model_params = params["model"]
+        if (
+            "pooler_type" in model_params
+            and model_params["pooler_type"] != "first"
+        ):
+            stack_params["ir_mode"] = "mlir-xla"
+
     if (
         is_cs(runconfig_params)
         or runconfig_params["validate_only"]
@@ -277,6 +289,7 @@ def set_custom_config(config, params):
         config.matching.match_lair.disabled_converters.append(
             "AttentionCIRHConverter"
         )
+
     if params["model"].get("use_vsl", False):
         config.matching.kernel.use_legacy_vsl = True
 

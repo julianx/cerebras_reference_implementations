@@ -71,25 +71,12 @@ def set_defaults(params):
     # Set up model defaults
     mparams = params["model"]
     mparams["num_hidden_layers"] = mparams.get("num_hidden_layers", 1)
-
-    mparams["embedding_size"] = mparams.get(
-        "embedding_size", mparams["hidden_size"]
-    )
-    # default to False for Gpt-J, set to True for Gpt-NeoX
-    mparams["use_position_embeddings"] = mparams.get(
-        "use_position_embeddings", False
-    )
-    # defaults from Gpt-2, used by Gpt-NeoX
-    mparams["position_embedding_type"] = mparams.get(
-        "position_embedding_type", "learned"
-    )
     mparams["embedding_dropout_rate"] = mparams.get(
         "embedding_dropout_rate", 0.0
     )
 
     init_keys = [
         "embedding_initializer",
-        "position_embedding_initializer",
         "initializer",
         "output_layer_initializer",
     ]
@@ -119,6 +106,7 @@ def set_defaults(params):
     )
     mparams["backbone_only"] = mparams.get("backbone_only", False)
     mparams["use_bias_in_output"] = mparams.get("use_bias_in_output", True)
+    mparams["use_cache"] = mparams.get("use_cache", False)
 
     # Optimizer parameters
     oparams = params["optimizer"]
@@ -340,9 +328,7 @@ def get_default_initializations(params, key):
             "mode": "fan_in",
             "distribution": "truncated_normal",
         }
-    elif key == "position_embedding_initializer":
-        return {
-            "name": "normal",
-            "mean": 0.0,
-            "stddev": 1.0,
-        }
+    else:
+        raise ValueError(
+            f"{key} currently not supported, check value passed in."
+        )

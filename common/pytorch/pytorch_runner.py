@@ -82,6 +82,10 @@ class PyTorchRunner(PyTorchBaseRunner):
             # Normalize loss to account for gradient accumulation
             return super().train_forward(data) / float(self._grad_accum_steps)
 
+    def eval_forward(self, data):
+        with autocast(enabled=self._mixed_precision):
+            return super().eval_forward(data)
+
     def backward(self, loss):
         if self._scaler:
             self._scaler.scale(loss).backward()

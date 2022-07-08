@@ -26,7 +26,6 @@ from cerebras_reference_implementations.bert.pytorch.model import (
 from cerebras_reference_implementations.bert.pytorch.utils import set_defaults
 from cerebras_reference_implementations.common.pytorch.run_utils import run
 
-
 def main():
 
     run(

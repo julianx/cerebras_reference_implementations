@@ -47,10 +47,7 @@ class MNIST(nn.Module):
         self.fc_layers = nn.ModuleList(self.fc_layers)
         self.last_layer = nn.Linear(input_size, 10)
 
-        if model_params["activation_fn"] == "relu":
-            self.nonlin = nn.ReLU()
-        else:
-            raise ValueError("only support activation_fn: 'relu'")
+        self.nonlin = self._get_nonlinear(model_params)
 
         self.dropout = nn.Dropout(model_params["dropout"])
 
@@ -82,6 +79,12 @@ class MNIST(nn.Module):
         outputs = F.log_softmax(pred_logits, dim=1)
         loss = self.loss_fn(outputs, labels)
         return loss
+
+    def _get_nonlinear(self, model_params):
+        if model_params["activation_fn"] == "relu":
+            return nn.ReLU()
+        else:
+            raise ValueError("only support activation_fn: 'relu'")
 
 
 class MNISTModel(PyTorchBaseModel):

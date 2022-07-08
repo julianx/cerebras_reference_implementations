@@ -179,6 +179,10 @@ def validate_params(params, cs1_modes):
             runconfig_params.get("multireplica")
             and runconfig_params["mode"] != "train"
         ), "--multireplica can only be used in train mode."
+    else:
+        assert not runconfig_params.get(
+            "multireplica"
+        ), "--multireplica can only be used on the Cerebras System!"
 
 
 def run(

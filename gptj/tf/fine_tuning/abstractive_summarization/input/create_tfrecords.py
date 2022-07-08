@@ -20,8 +20,11 @@ import argparse
 import json
 import logging
 import os
+import sys
 
 import tensorflow as tf
+
+sys.path.append(os.path.join(os.path.dirname(__file__), "../../../../../../"))
 from cerebras_reference_implementations.common.input.utils import (
     check_and_create_output_dirs,
 )

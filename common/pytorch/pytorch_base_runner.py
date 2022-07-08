@@ -117,6 +117,16 @@ class PyTorchBaseRunner(metaclass=abc.ABCMeta):
             summary_ctx.__enter__()
             atexit.register(summary_ctx.__exit__)
 
+        if cm.use_cs():
+            # Number of replicas to use for multireplica
+            # 1 replica meaning no multireplica and -1 meaning
+            # choose optimal number of replicas
+            num_replicas = self._runconfig.get("num_replicas", 1)
+            if num_replicas == 1 and self._runconfig.get("multireplica"):
+                num_replicas = -1
+
+            cm.set_target_num_replicas(num_replicas)
+
     @property
     def _writer(self) -> Optional[SummaryWriter]:
         return self._writers.get(self._active_mode)
@@ -902,8 +912,12 @@ class PyTorchBaseRunner(metaclass=abc.ABCMeta):
                 "use_cbfloat16", False
             )
 
+            service_workdir = runconfig_params["service_dir"]
+            compile_dir = runconfig_params.get("compile_dir") or service_workdir
+
             cbtorch.initialize(
-                service_workdir=runconfig_params["service_dir"],
+                service_workdir=service_workdir,
+                compile_dir=compile_dir,
                 cs_ip=cs_ip,
                 compile_only=compile_only,
                 use_cbfloat16=use_cbfloat16,

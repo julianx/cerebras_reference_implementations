@@ -84,10 +84,8 @@ def perplexity_metric(
             metrics_collections, _compute_perplexity, total_loss, total_tokens
         )
 
-        update_op = tf.compat.v1.div_no_nan(
-            update_total_loss_op,
-            tf.maximum(update_total_tokens_op, 0),
-            name='update_op',
+        update_op = _compute_perplexity(
+            None, update_total_loss_op, update_total_tokens_op
         )
 
         if updates_collections:

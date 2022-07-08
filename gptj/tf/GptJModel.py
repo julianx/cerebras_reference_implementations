@@ -31,9 +31,6 @@ from cerebras_reference_implementations.common.tf.layers.EmbeddingLayer import (
 from cerebras_reference_implementations.common.tf.layers.LayerNormalizationLayer import (
     LayerNormalizationLayer,
 )
-from cerebras_reference_implementations.common.tf.layers.PositionEmbeddingLayer import (
-    PositionEmbeddingLayer,
-)
 from cerebras_reference_implementations.common.tf.layers.SharedWeightsDenseLayer import (
     SharedWeightsDenseLayer,
 )
@@ -52,9 +49,6 @@ from cerebras_reference_implementations.common.tf.optimizers.Trainer import (
     Trainer,
 )
 from cerebras_reference_implementations.common.tf.TFBaseModel import TFBaseModel
-from cerebras_reference_implementations.gptj.tf.layers.attention_utils import (
-    get_head_mask,
-)
 from cerebras_reference_implementations.gptj.tf.layers.GptJDecoder import (
     GptJDecoder,
 )
@@ -75,17 +69,11 @@ class GptJModel(TFBaseModel):
 
         # embedding params
         vocab_size = params["train_input"]["vocab_size"]
-        embedding_size = params["model"]["embedding_size"]
         embedding_dropout_rate = params["model"]["embedding_dropout_rate"]
-        dropout_seed = params["model"]["dropout_seed"]
         share_embedding_weights = params["model"]["share_embedding_weights"]
-
-        # position embeddings params
         max_position_embeddings = params["model"]["max_position_embeddings"]
-        use_position_embeddings = params["model"]["use_position_embeddings"]
-        position_embedding_type = params["model"]["position_embedding_type"]
 
-        # block params
+        # model params
         hidden_size = params["model"]["hidden_size"]
         num_heads = params["model"]["num_heads"]
         num_hidden_layers = params["model"]["num_hidden_layers"]
@@ -100,31 +88,26 @@ class GptJModel(TFBaseModel):
         attention_dropout_rate = params["model"]["attention_dropout_rate"]
         residual_dropout_rate = params["model"]["residual_dropout_rate"]
         use_cache = params["model"]["use_cache"]
+        use_bias_in_output = params["model"]["use_bias_in_output"]
 
-        # layernorm params
+        # layernorm parameters
         layer_norm_epsilon = params["model"]["layer_norm_epsilon"]
 
-        # batch size
-        self.train_batch_size = params["train_input"]["batch_size"]
-        self.eval_batch_size = params["eval_input"]["batch_size"]
+        # Eval Metrics params
+        bits_per_x_dataset = params["model"]["bits_per_x_dataset"]
 
-        # Weight initialization params
+        # Seeds
+        dropout_seed = params["model"]["dropout_seed"]
+        weight_initialization_seed = params["model"][
+            "weight_initialization_seed"
+        ]
+
+        # Set up weight initializers with given parameters
         initializer_spec = params["model"]["initializer"]
         embedding_initializer_spec = params["model"]["embedding_initializer"]
         output_layer_initializer_spec = params["model"][
             "output_layer_initializer"
         ]
-        weight_initialization_seed = params["model"][
-            "weight_initialization_seed"
-        ]
-
-        # Output layer params
-        use_bias_in_output = params["model"]["use_bias_in_output"]
-
-        # Eval Metrics params
-        bits_per_x_dataset = params["model"]["bits_per_x_dataset"]
-
-        # Set up initializers
         initializer = create_initializer(
             initializer_spec, weight_initialization_seed
         )
@@ -143,13 +126,13 @@ class GptJModel(TFBaseModel):
             )
         )
 
-        # CS util params for layers
+        # CS params for layers
         boundary_casting = params["model"]["boundary_casting"]
         tf_summary = params["model"]["tf_summary"]
 
         self.wte = EmbeddingLayer(
             input_dim=vocab_size,
-            output_dim=embedding_size,
+            output_dim=hidden_size,
             embeddings_initializer=embedding_initializer,
             boundary_casting=boundary_casting,
             tf_summary=tf_summary,
@@ -157,38 +140,17 @@ class GptJModel(TFBaseModel):
             name="input_embedding",
         )
 
-        if use_position_embeddings:
-            position_embedding_initializer_spec = params["model"][
-                "position_embedding_initializer"
-            ]
-            position_embedding_initializer = (
-                initializer
-                if position_embedding_initializer_spec is None
-                else create_initializer(
-                    position_embedding_initializer_spec,
-                    weight_initialization_seed,
-                )
-            )
-            self.wtp = PositionEmbeddingLayer(
-                max_position_embeddings=max_position_embeddings,
-                embedding_type=position_embedding_type,
-                embeddings_initializer=position_embedding_initializer,
+        if embedding_dropout_rate > 0.0:
+            self.embedding_dropout = DropoutLayer(
+                rate=embedding_dropout_rate,
+                seed=dropout_seed,
                 boundary_casting=boundary_casting,
                 tf_summary=tf_summary,
                 dtype=self.policy,
-                name="position_embedding",
+                name="embedding_dropout",
             )
         else:
-            self.wtp = None
-
-        self.drop = DropoutLayer(
-            rate=embedding_dropout_rate,
-            seed=dropout_seed,
-            boundary_casting=boundary_casting,
-            tf_summary=tf_summary,
-            dtype=self.policy,
-            name="embedding_dropout",
-        )
+            self.embedding_dropout = None
 
         self.h = GptJDecoder(
             hidden_size=hidden_size,
@@ -267,7 +229,6 @@ class GptJModel(TFBaseModel):
         self.backbone_only = backbone_only
         self.share_embedding_weights = share_embedding_weights
         self.bits_per_x_dataset = bits_per_x_dataset
-        self.use_position_embeddings = use_position_embeddings
 
     def build_model(self, features, mode):
         """
@@ -288,27 +249,19 @@ class GptJModel(TFBaseModel):
         ], f"The model supports TRAIN, EVAL, and PREDICT modes."
         is_training = mode == tf.estimator.ModeKeys.TRAIN
 
-        input_ids = features["input_ids"]
-
-        # inference workflow
+        # inference workflow only
         past_key_values = features.get("past_key_values", None)
         if mode is not tf.estimator.ModeKeys.PREDICT:
             assert (
                 past_key_values is None and self.use_cache is False
             ), "Currently support past_key_values only in PREDICT mode."
 
-        inputs_embeds = self.wte(input_ids)
-        if self.use_position_embeddings:
-            position_ids = None
-            if past_key_values is not None:
-                position_ids = (
-                    tf.range(tf.shape(input_ids)[1])
-                    + tf.shape(past_key_values)[-2]
-                )
-            inputs_embeds = self.wtp(inputs_embeds, position_ids)
-
-        hidden_states = inputs_embeds
-        hidden_states = self.drop(hidden_states, training=is_training)
+        input_ids = features["input_ids"]
+        hidden_states = self.wte(input_ids)
+        if self.embedding_dropout is not None:
+            hidden_states = self.embedding_dropout(
+                hidden_states, training=is_training
+            )
 
         # mask for attention
         attention_mask = features.get(
@@ -318,13 +271,9 @@ class GptJModel(TFBaseModel):
                 dtype=hidden_states.dtype,
             ),
         )
-        head_mask = features.get("head_mask", None)
-        head_mask = get_head_mask(head_mask, self.num_hidden_layers)
-
         hidden_states, present_key_values = self.h(
             hidden_states,
             attention_mask=attention_mask,
-            head_mask=head_mask,
             past_key_values=past_key_values,
             use_cache=self.use_cache,
             training=is_training,
@@ -383,7 +332,7 @@ class GptJModel(TFBaseModel):
         pred = tf.argmax(logits, axis=-1, output_type=tf.int32)
         softmax_ce_loss = self.softmax_ce_loss(labels, logits=logits)
 
-        mask = 1 - features["input_mask"]
+        mask = tf.cast(1 - features["input_mask"], softmax_ce_loss.dtype)
         # accuracy
         metrics_dict["eval/accuracy"] = tf.compat.v1.metrics.accuracy(
             labels=labels, predictions=pred, weights=mask,
@@ -408,11 +357,10 @@ class GptJModel(TFBaseModel):
 
     def _compute_loss(self, model_outputs, features, labels, mode):
         logits = model_outputs[0]
-        mask = 1 - features["input_mask"]
+        softmax_ce_loss = self.softmax_ce_loss(labels, logits=logits)
+        mask = tf.cast(1 - features["input_mask"], softmax_ce_loss.dtype)
         cross_entropy = tf.reduce_sum(
-            input_tensor=tf.cast(
-                self.softmax_ce_loss(labels, logits=logits) * mask, tf.float32
-            )
+            input_tensor=tf.cast(softmax_ce_loss * mask, tf.float32)
         )
         scale = self._compute_num_tokens(mask)
         return tf.cast(cross_entropy / scale, logits.dtype)
@@ -437,6 +385,7 @@ class GptJModel(TFBaseModel):
         unscaled_loss *= num_tokens
         ppl = calculate_perplexity(unscaled_loss, num_tokens)
         tf.compat.v1.summary.scalar("train/lm_perplexity", ppl)
+
         # bits_per_byte
         bpb = calculate_bits_per_x(
             unscaled_loss,

@@ -120,6 +120,5 @@ def bucketed_batch(
 
     else:
         raise ValueError(
-            "buckets must be None or a list of boundaries. "
-            f"Got {bucket_boundaries}."
+            "buckets must be None or a list of boundaries. " f"Got {buckets}."
         )

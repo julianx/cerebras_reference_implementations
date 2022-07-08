@@ -35,7 +35,12 @@ def set_defaults(params):
     )
 
     # Pass settings into data loader.
-    for model_key in ("disable_nsp", "vocab_size", "enable_vts"):
+    for model_key in (
+        "disable_nsp",
+        "vocab_size",
+        "enable_vts",
+        "mixed_precision",
+    ):
         for input_key in ("train_input", "eval_input"):
             params[input_key][model_key] = params["model"].get(model_key)
 
@@ -60,14 +65,6 @@ def set_custom_stack_params(params):
             )
             state.full_config.placement.prep_recolor_kernels.wrap_pack_kernel = (
                 True
-            )
-
-        if (
-            params["model"].get("disable_nsp", False) == True
-            and params["model"].get("enable_vts", False) == False
-        ):
-            state.full_config.matching.kernel.tensor_index_rxcount_buf_mwc_factor = (
-                8.0
             )
 
 
