@@ -14,7 +14,7 @@
 
 from pathlib import Path
 
-from cerebras_reference_implementations.common.pytorch.utils import (
+from common.pytorch.utils import (
     update_params_from_file,
 )
 

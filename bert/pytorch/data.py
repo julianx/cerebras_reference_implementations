@@ -14,11 +14,11 @@
 
 import sys
 
-from cerebras_reference_implementations.bert.pytorch.input.BertCSVDynamicMaskDataProcessor import (  # noqa
+from bert.pytorch.input.BertCSVDynamicMaskDataProcessor import (  # noqa
     BertCSVDynamicMaskDataProcessor,
 )
 
-from cerebras_reference_implementations.bert.pytorch.input.BertCSVDataProcessor import (  # noqa
+from bert.pytorch.input.BertCSVDataProcessor import (  # noqa
     BertCSVDataProcessor,
 )
 

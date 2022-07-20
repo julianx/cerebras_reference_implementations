@@ -226,7 +226,7 @@ def get_params_from_args(
 
 
 def get_input_dtype(to_float16: bool):
-    from cerebras_reference_implementations.common.pytorch import cb_model as cm
+    from common.pytorch import cb_model as cm
 
     if to_float16 and not cm.use_cs() and not torch.cuda.is_available():
         print(
@@ -356,7 +356,7 @@ def to_tensor(value):
 
 
 def setup_logging(chief_logging_level: str, streamer_logging_level: str):
-    from cerebras_reference_implementations.common.pytorch import cb_model as cm
+    from common.pytorch import cb_model as cm
 
     class CustomFormatter(logging.Formatter):
         def __init__(self):

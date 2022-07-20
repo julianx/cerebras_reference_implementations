@@ -12,13 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from cerebras_reference_implementations.common.tf.layers.ActivationLayer import (
+from common.tf.layers.ActivationLayer import (
     ActivationLayer,
 )
-from cerebras_reference_implementations.common.tf.layers.BaseLayer import (
+from common.tf.layers.BaseLayer import (
     BaseLayer,
 )
-from cerebras_reference_implementations.common.tf.layers.utils import (
+from common.tf.layers.utils import (
     boundary_cast,
     summary_layer,
 )

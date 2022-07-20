@@ -13,11 +13,11 @@
 # limitations under the License.
 
 import tensorflow as tf
-from cerebras_reference_implementations.bert.tf.BertModel import BertModel
-from cerebras_reference_implementations.common.tf.estimator.cs_estimator_spec import (
+from bert.tf.BertModel import BertModel
+from common.tf.estimator.cs_estimator_spec import (
     CSEstimatorSpec,
 )
-from cerebras_reference_implementations.common.tf.hooks.grad_accum_hooks import (
+from common.tf.hooks.grad_accum_hooks import (
     get_grad_accum_hooks,
 )
 

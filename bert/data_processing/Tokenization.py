@@ -26,7 +26,7 @@ Tokenization classes and functions
 import unicodedata
 
 import numpy as np
-from cerebras_reference_implementations.bert.data_processing.utils import (
+from bert.data_processing.utils import (
     convert_to_unicode,
     whitespace_tokenize,
 )

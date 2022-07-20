@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import tensorflow as tf
-from cerebras_reference_implementations.common.tf.input.TfRecordsProcessor import (
+from common.tf.input.TfRecordsProcessor import (
     TfRecordsProcessor,
 )
 

@@ -17,11 +17,11 @@ import os
 import time
 
 import torch
-from cerebras_reference_implementations.common.pytorch import modes
-from cerebras_reference_implementations.common.pytorch.perf_utils import (
+from common.pytorch import modes
+from common.pytorch.perf_utils import (
     save_perf,
 )
-from cerebras_reference_implementations.common.pytorch.pytorch_base_runner import (
+from common.pytorch.pytorch_base_runner import (
     PyTorchBaseRunner,
 )
 

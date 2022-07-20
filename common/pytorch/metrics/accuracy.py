@@ -15,7 +15,7 @@
 """
 Accuracy metric for PyTorch.
 """
-from cerebras_reference_implementations.common.pytorch.metrics.cb_metric import (
+from common.pytorch.metrics.cb_metric import (
     CBMetric,
 )
 

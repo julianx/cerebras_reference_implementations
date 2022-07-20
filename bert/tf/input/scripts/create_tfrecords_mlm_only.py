@@ -25,18 +25,18 @@ import sys
 import tensorflow as tf
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../../../.."))
-from cerebras_reference_implementations.bert.data_processing.mlm_only_processor import (
+from bert.data_processing.mlm_only_processor import (
     data_generator,
 )
-from cerebras_reference_implementations.bert.data_processing.utils import (
+from bert.data_processing.utils import (
     count_total_documents,
     get_output_type_shapes,
 )
-from cerebras_reference_implementations.bert.tf.input.utils import (
+from bert.tf.input.utils import (
     create_tf_train_example,
     create_unmasked_tokens_example,
 )
-from cerebras_reference_implementations.common.input.utils import (
+from common.input.utils import (
     check_and_create_output_dirs,
 )
 

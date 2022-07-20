@@ -20,7 +20,7 @@ try:
 except ImportError:
     from types import SimpleNamespace
 
-    from cerebras_reference_implementations.common.pytorch.utils import to_cpu
+    from common.pytorch.utils import to_cpu
 
     amp = SimpleNamespace(get_init_params=lambda: {},)
 

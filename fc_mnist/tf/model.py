@@ -16,7 +16,7 @@
 Simple FC MNIST model to be used with Estimator
 """
 import tensorflow as tf
-from cerebras_reference_implementations.common.tf.estimator.cs_estimator_spec import (
+from common.tf.estimator.cs_estimator_spec import (
     CSEstimatorSpec,
 )
 from tensorflow.keras.layers import Activation, Dense, Dropout, LeakyReLU

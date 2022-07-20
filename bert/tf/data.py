@@ -14,14 +14,14 @@
 
 import sys
 
-from cerebras_reference_implementations.bert.tf.input.BertMlmOnlyTfRecordsDynamicMaskProcessor import (  # noqa
+from bert.tf.input.BertMlmOnlyTfRecordsDynamicMaskProcessor import (  # noqa
     BertMlmOnlyTfRecordsDynamicMaskProcessor,
 )
-from cerebras_reference_implementations.bert.tf.input.BertMlmOnlyTfRecordsStaticMaskProcessor import (  # noqa
+from bert.tf.input.BertMlmOnlyTfRecordsStaticMaskProcessor import (  # noqa
     BertMlmOnlyTfRecordsStaticMaskProcessor,
 )
 
-from cerebras_reference_implementations.bert.tf.input.BertTfRecordsProcessor import (  # noqa
+from bert.tf.input.BertTfRecordsProcessor import (  # noqa
     BertTfRecordsProcessor,
 )
 

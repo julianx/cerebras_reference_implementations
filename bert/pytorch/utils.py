@@ -15,9 +15,9 @@
 import logging
 from pathlib import Path
 
-from cerebras_reference_implementations.common.pytorch import cb_model as cm
-from cerebras_reference_implementations.common.pytorch import modes
-from cerebras_reference_implementations.common.pytorch.utils import (
+from common.pytorch import cb_model as cm
+from common.pytorch import modes
+from common.pytorch.utils import (
     update_params_from_file,
 )
 

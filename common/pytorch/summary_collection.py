@@ -19,7 +19,7 @@ from collections import defaultdict
 import cerebras_reference_implementations.common.pytorch.utils as utils
 import numpy as np
 import torch
-from cerebras_reference_implementations.common.pytorch import cb_model as cm
+from common.pytorch import cb_model as cm
 
 
 class SummaryCollection:

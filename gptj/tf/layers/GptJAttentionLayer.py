@@ -13,16 +13,16 @@
 # limitations under the License.
 
 import tensorflow as tf
-from cerebras_reference_implementations.common.tf.layers.BaseLayer import (
+from common.tf.layers.BaseLayer import (
     BaseLayer,
 )
-from cerebras_reference_implementations.common.tf.layers.DenseLayer import (
+from common.tf.layers.DenseLayer import (
     DenseLayer,
 )
-from cerebras_reference_implementations.common.tf.layers.DropoutLayer import (
+from common.tf.layers.DropoutLayer import (
     DropoutLayer,
 )
-from cerebras_reference_implementations.gptj.tf.layers.attention_utils import (
+from gptj.tf.layers.attention_utils import (
     apply_rotary_position_embedding,
     create_causal_bias,
     fixed_position_embeddings,

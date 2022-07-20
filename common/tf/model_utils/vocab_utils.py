@@ -14,7 +14,7 @@
 
 import os
 
-from cerebras_reference_implementations.common.model_utils.count_lines import (
+from common.model_utils.count_lines import (
     count_lines,
 )
 

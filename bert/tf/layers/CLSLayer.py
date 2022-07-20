@@ -12,16 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from cerebras_reference_implementations.common.tf.layers.BaseLayer import (
+from common.tf.layers.BaseLayer import (
     BaseLayer,
 )
-from cerebras_reference_implementations.common.tf.layers.DenseLayer import (
+from common.tf.layers.DenseLayer import (
     DenseLayer,
 )
-from cerebras_reference_implementations.common.tf.layers.DropoutLayer import (
+from common.tf.layers.DropoutLayer import (
     DropoutLayer,
 )
-from cerebras_reference_implementations.common.tf.layers.PoolerLayerV2 import (
+from common.tf.layers.PoolerLayerV2 import (
     PoolerLayerV2,
 )
 

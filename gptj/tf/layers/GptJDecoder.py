@@ -13,10 +13,10 @@
 # limitations under the License.
 
 import tensorflow as tf
-from cerebras_reference_implementations.common.tf.layers.BaseLayer import (
+from common.tf.layers.BaseLayer import (
     BaseLayer,
 )
-from cerebras_reference_implementations.gptj.tf.layers.GptJBlock import (
+from gptj.tf.layers.GptJBlock import (
     GptJBlock,
 )
 

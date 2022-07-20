@@ -19,22 +19,22 @@ import sys
 import tensorflow as tf
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../.."))
-from cerebras_reference_implementations.bert.tf.data import (
+from bert.tf.data import (
     eval_input_fn,
     train_input_fn,
 )
-from cerebras_reference_implementations.bert.tf.model import model_fn
-from cerebras_reference_implementations.bert.tf.utils import (
+from bert.tf.model import model_fn
+from bert.tf.utils import (
     get_custom_stack_params,
     get_params,
 )
-from cerebras_reference_implementations.common.tf.estimator.cs_estimator import (
+from common.tf.estimator.cs_estimator import (
     CerebrasEstimator,
 )
-from cerebras_reference_implementations.common.tf.estimator.run_config import (
+from common.tf.estimator.run_config import (
     CSRunConfig,
 )
-from cerebras_reference_implementations.common.tf.run_utils import (
+from common.tf.run_utils import (
     check_env,
     create_warm_start_settings,
     get_csconfig,

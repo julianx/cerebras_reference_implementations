@@ -15,13 +15,13 @@
 import math
 
 import yaml
-from cerebras_reference_implementations.bert.tf.transformer_utils import (
+from bert.tf.transformer_utils import (
     get_bits_per_x_dataset,
 )
-from cerebras_reference_implementations.common.model_utils.count_lines import (
+from common.model_utils.count_lines import (
     count_lines,
 )
-from cerebras_reference_implementations.common.tf.run_utils import is_cs
+from common.tf.run_utils import is_cs
 
 try:
     from cerebras.pb.stack.full_pb2 import FullConfig

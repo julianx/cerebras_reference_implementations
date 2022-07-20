@@ -17,16 +17,16 @@ The trainer class.
 """
 import numpy as np
 import tensorflow as tf
-from cerebras_reference_implementations.common.tf.layers.utils import (
+from common.tf.layers.utils import (
     summary_layer,
 )
-from cerebras_reference_implementations.common.tf.optimizers.AdamWOptimizer import (
+from common.tf.optimizers.AdamWOptimizer import (
     AdamWOptimizer,
 )
-from cerebras_reference_implementations.common.tf.optimizers.GradAccumOptimizer import (
+from common.tf.optimizers.GradAccumOptimizer import (
     GradAccumOptimizer,
 )
-from cerebras_reference_implementations.common.tf.optimizers.LossScale import (
+from common.tf.optimizers.LossScale import (
     CSDynamicLossScale,
     wrap_optimizer,
 )

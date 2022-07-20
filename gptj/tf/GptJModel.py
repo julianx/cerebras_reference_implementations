@@ -13,43 +13,43 @@
 # limitations under the License.
 
 import tensorflow as tf
-from cerebras_reference_implementations.bert.tf.transformer_utils import (
+from bert.tf.transformer_utils import (
     create_autoregressive_attention_mask,
 )
-from cerebras_reference_implementations.common.tf.layers.CrossEntropyFromLogitsLayer import (
+from common.tf.layers.CrossEntropyFromLogitsLayer import (
     CrossEntropyFromLogitsLayer,
 )
-from cerebras_reference_implementations.common.tf.layers.DenseLayer import (
+from common.tf.layers.DenseLayer import (
     DenseLayer,
 )
-from cerebras_reference_implementations.common.tf.layers.DropoutLayer import (
+from common.tf.layers.DropoutLayer import (
     DropoutLayer,
 )
-from cerebras_reference_implementations.common.tf.layers.EmbeddingLayer import (
+from common.tf.layers.EmbeddingLayer import (
     EmbeddingLayer,
 )
-from cerebras_reference_implementations.common.tf.layers.LayerNormalizationLayer import (
+from common.tf.layers.LayerNormalizationLayer import (
     LayerNormalizationLayer,
 )
-from cerebras_reference_implementations.common.tf.layers.SharedWeightsDenseLayer import (
+from common.tf.layers.SharedWeightsDenseLayer import (
     SharedWeightsDenseLayer,
 )
-from cerebras_reference_implementations.common.tf.metrics.bits_per_x import (
+from common.tf.metrics.bits_per_x import (
     bits_per_x_metric,
     calculate_bits_per_x,
 )
-from cerebras_reference_implementations.common.tf.metrics.perplexity import (
+from common.tf.metrics.perplexity import (
     calculate_perplexity,
     perplexity_metric,
 )
-from cerebras_reference_implementations.common.tf.model_utils.create_initializer import (
+from common.tf.model_utils.create_initializer import (
     create_initializer,
 )
-from cerebras_reference_implementations.common.tf.optimizers.Trainer import (
+from common.tf.optimizers.Trainer import (
     Trainer,
 )
-from cerebras_reference_implementations.common.tf.TFBaseModel import TFBaseModel
-from cerebras_reference_implementations.gptj.tf.layers.GptJDecoder import (
+from common.tf.TFBaseModel import TFBaseModel
+from gptj.tf.layers.GptJDecoder import (
     GptJDecoder,
 )
 

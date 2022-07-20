@@ -15,7 +15,7 @@
 import inspect
 
 import tensorflow as tf
-from cerebras_reference_implementations.common.tf.estimator.utils import (
+from common.tf.estimator.utils import (
     host_call_to_eval_metric_ops,
     validate_host_call,
 )

@@ -18,7 +18,7 @@ Utilities for saving scalar summaries.
 from typing import Optional
 
 import torch
-from cerebras_reference_implementations.common.pytorch.summaries.cb_summary import (
+from common.pytorch.summaries.cb_summary import (
     CBSummary,
     get_all_summaries,
 )

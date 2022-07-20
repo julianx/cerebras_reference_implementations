@@ -19,19 +19,19 @@ import csv
 
 import numpy as np
 import torch
-from cerebras_reference_implementations.bert.pytorch.input.utils import (
+from bert.pytorch.input.utils import (
     build_vocab,
     create_masked_lm_predictions,
     get_meta_data,
     parse_text,
     shard_and_shuffle_data,
 )
-from cerebras_reference_implementations.bert.pytorch.input_utils import (
+from bert.pytorch.input_utils import (
     get_data_for_task,
     task_id,
 )
-from cerebras_reference_implementations.common.pytorch import cb_model as cm
-from cerebras_reference_implementations.common.pytorch.input_utils import (
+from common.pytorch import cb_model as cm
+from common.pytorch.input_utils import (
     bucketed_batch,
 )
 

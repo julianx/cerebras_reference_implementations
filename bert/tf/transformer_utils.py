@@ -15,14 +15,14 @@
 
 import numpy as np
 import tensorflow as tf
-from cerebras_reference_implementations.common.tf.layers.EmbeddingLayer import (
+from common.tf.layers.EmbeddingLayer import (
     EmbeddingLayer,
 )
-from cerebras_reference_implementations.common.tf.layers.PositionEmbeddingLayer import (
+from common.tf.layers.PositionEmbeddingLayer import (
     PositionEmbeddingLayer,
 )
 
-from cerebras_reference_implementations.common.tf.layers.SegmentEmbeddingLayer import (  # noqa
+from common.tf.layers.SegmentEmbeddingLayer import (  # noqa
     SegmentEmbeddingLayer,
 )
 

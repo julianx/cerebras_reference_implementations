@@ -17,7 +17,7 @@ import json
 
 import numpy as np
 import six
-from cerebras_reference_implementations.common.model_utils.count_lines import (
+from common.model_utils.count_lines import (
     count_lines,
 )
 from keras_preprocessing.text import text_to_word_sequence

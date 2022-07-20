@@ -35,7 +35,7 @@ import struct
 
 import numpy as np
 import tensorflow as tf
-from cerebras_reference_implementations.gptj.data_processing.BPETokenizer import (
+from gptj.data_processing.BPETokenizer import (
     BPETokenizer,
 )
 from tensorflow.core.example import example_pb2

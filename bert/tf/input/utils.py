@@ -14,7 +14,7 @@
 
 import numpy as np
 import tensorflow as tf
-from cerebras_reference_implementations.common.tf.input.utils import (
+from common.tf.input.utils import (
     create_bytes_feature,
     create_float_feature,
     create_int_feature,

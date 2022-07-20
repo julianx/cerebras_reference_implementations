@@ -15,10 +15,10 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from cerebras_reference_implementations.common.pytorch.metrics import (
+from common.pytorch.metrics import (
     AccuracyMetric,
 )
-from cerebras_reference_implementations.common.pytorch.PyTorchBaseModel import (
+from common.pytorch.PyTorchBaseModel import (
     PyTorchBaseModel,
 )
 

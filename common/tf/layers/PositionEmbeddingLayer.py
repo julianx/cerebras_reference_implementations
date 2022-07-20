@@ -15,10 +15,10 @@
 from math import log
 
 import tensorflow as tf
-from cerebras_reference_implementations.common.tf.layers.BaseLayer import (
+from common.tf.layers.BaseLayer import (
     BaseLayer,
 )
-from cerebras_reference_implementations.common.tf.layers.utils import (
+from common.tf.layers.utils import (
     boundary_cast,
     summary_layer,
 )

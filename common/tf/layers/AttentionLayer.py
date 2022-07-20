@@ -15,13 +15,13 @@
 import math
 
 import tensorflow as tf
-from cerebras_reference_implementations.common.tf.layers.BaseLayer import (
+from common.tf.layers.BaseLayer import (
     BaseLayer,
 )
-from cerebras_reference_implementations.common.tf.layers.DenseLayer import (
+from common.tf.layers.DenseLayer import (
     DenseLayer,
 )
-from cerebras_reference_implementations.common.tf.layers.DropoutLayer import (
+from common.tf.layers.DropoutLayer import (
     DropoutLayer,
 )
 

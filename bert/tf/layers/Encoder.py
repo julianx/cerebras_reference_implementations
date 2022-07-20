@@ -12,25 +12,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from cerebras_reference_implementations.common.tf.layers.AddLayer import (
+from common.tf.layers.AddLayer import (
     AddLayer,
 )
-from cerebras_reference_implementations.common.tf.layers.AttentionLayer import (
+from common.tf.layers.AttentionLayer import (
     SelfAttentionLayer,
 )
-from cerebras_reference_implementations.common.tf.layers.BaseLayer import (
+from common.tf.layers.BaseLayer import (
     BaseLayer,
 )
-from cerebras_reference_implementations.common.tf.layers.DropoutLayer import (
+from common.tf.layers.DropoutLayer import (
     DropoutLayer,
 )
-from cerebras_reference_implementations.common.tf.layers.FeedForwardNetwork import (
+from common.tf.layers.FeedForwardNetwork import (
     FeedForwardNetwork,
 )
-from cerebras_reference_implementations.common.tf.layers.LayerNormalizationLayer import (
+from common.tf.layers.LayerNormalizationLayer import (
     LayerNormalizationLayer,
 )
-from cerebras_reference_implementations.common.tf.layers.PrePostProcessWrapper import (
+from common.tf.layers.PrePostProcessWrapper import (
     PrePostProcessWrapper,
 )
 

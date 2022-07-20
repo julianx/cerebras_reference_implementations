@@ -15,7 +15,7 @@
 import math
 
 import tensorflow as tf
-from cerebras_reference_implementations.common.tf.metrics.utils import (
+from common.tf.metrics.utils import (
     aggregate_across_replicas,
     metric_variable,
 )

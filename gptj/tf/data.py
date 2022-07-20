@@ -14,7 +14,7 @@
 
 import sys
 
-from cerebras_reference_implementations.gptj.tf.input.GptTfRecordsProcessor import (  # noqa
+from gptj.tf.input.GptTfRecordsProcessor import (  # noqa
     GptTfRecordsProcessor,
 )
 

@@ -18,19 +18,19 @@ Processor for performing dynamic masking on MLM only data for BERT
 import random
 
 import tensorflow as tf
-from cerebras_reference_implementations.bert.data_processing.mlm_only_processor import (
+from bert.data_processing.mlm_only_processor import (
     create_masked_lm_features,
 )
-from cerebras_reference_implementations.bert.data_processing.Tokenization import (
+from bert.data_processing.Tokenization import (
     FullTokenizer,
 )
-from cerebras_reference_implementations.bert.data_processing.utils import (
+from bert.data_processing.utils import (
     get_output_type_shapes,
 )
-from cerebras_reference_implementations.common.tf.input.TfRecordsProcessor import (
+from common.tf.input.TfRecordsProcessor import (
     TfRecordsProcessor,
 )
-from cerebras_reference_implementations.common.tf.input.utils import (
+from common.tf.input.utils import (
     bucketed_batch,
 )
 

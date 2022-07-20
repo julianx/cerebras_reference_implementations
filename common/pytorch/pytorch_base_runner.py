@@ -25,26 +25,26 @@ from typing import Callable, Optional, Tuple
 
 import numpy as np
 import torch
-from cerebras_reference_implementations.common.pytorch import cb_model as cm
-from cerebras_reference_implementations.common.pytorch import modes
-from cerebras_reference_implementations.common.pytorch.loss_utils import (
+from common.pytorch import cb_model as cm
+from common.pytorch import modes
+from common.pytorch.loss_utils import (
     LossSaver,
     extract_loss,
 )
-from cerebras_reference_implementations.common.pytorch.metrics import (
+from common.pytorch.metrics import (
     compute_all_metrics,
     reset_all_metrics,
 )
-from cerebras_reference_implementations.common.pytorch.PyTorchBaseModel import (
+from common.pytorch.PyTorchBaseModel import (
     PyTorchBaseModel,
 )
-from cerebras_reference_implementations.common.pytorch.summaries import (
+from common.pytorch.summaries import (
     save_all_summaries,
 )
-from cerebras_reference_implementations.common.pytorch.summary_collection import (
+from common.pytorch.summary_collection import (
     SummaryCollection,
 )
-from cerebras_reference_implementations.common.pytorch.utils import (
+from common.pytorch.utils import (
     visit_structure,
 )
 from torch.utils.tensorboard import SummaryWriter
@@ -927,19 +927,19 @@ class PyTorchBaseRunner(metaclass=abc.ABCMeta):
             model: PyTorchBaseModel = model_fn(params)
 
             if compile_only:
-                from cerebras_reference_implementations.common.pytorch.pytorch_cs_compiler import (
+                from common.pytorch.pytorch_cs_compiler import (
                     PyTorchCSCompiler,
                 )
 
                 return PyTorchCSCompiler(model, params)
             else:
-                from cerebras_reference_implementations.common.pytorch.pytorch_cs_runner import (
+                from common.pytorch.pytorch_cs_runner import (
                     PyTorchCSRunner,
                 )
 
                 return PyTorchCSRunner(model, params)
         else:
-            from cerebras_reference_implementations.common.pytorch.pytorch_runner import (
+            from common.pytorch.pytorch_runner import (
                 PyTorchRunner,
             )
 

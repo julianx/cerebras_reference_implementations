@@ -22,10 +22,10 @@ https://github.com/pytorch/ignite/blob/master/ignite/metrics/confusion_matrix.py
 from typing import List, Optional
 
 import torch
-from cerebras_reference_implementations.common.pytorch.metrics.cb_metric import (
+from common.pytorch.metrics.cb_metric import (
     CBMetric,
 )
-from cerebras_reference_implementations.common.pytorch.metrics.metric_utils import (
+from common.pytorch.metrics.metric_utils import (
     divide_no_nan,
 )
 

@@ -13,13 +13,13 @@
 # limitations under the License.
 
 import tensorflow as tf
-from cerebras_reference_implementations.common.tf.estimator.cs_estimator_spec import (
+from common.tf.estimator.cs_estimator_spec import (
     CSEstimatorSpec,
 )
-from cerebras_reference_implementations.common.tf.hooks.grad_accum_hooks import (
+from common.tf.hooks.grad_accum_hooks import (
     get_grad_accum_hooks,
 )
-from cerebras_reference_implementations.gptj.tf.GptJModel import GptJModel
+from gptj.tf.GptJModel import GptJModel
 
 
 def model_fn(features, labels, mode, params):

@@ -25,13 +25,13 @@ import sys
 import tensorflow as tf
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../../../../../"))
-from cerebras_reference_implementations.common.input.utils import (
+from common.input.utils import (
     check_and_create_output_dirs,
 )
-from cerebras_reference_implementations.common.tf.input.utils import (
+from common.tf.input.utils import (
     create_int_feature,
 )
-from cerebras_reference_implementations.gptj.tf.fine_tuning.abstractive_summarization.input.data_processor_utils import (
+from gptj.tf.fine_tuning.abstractive_summarization.input.data_processor_utils import (
     training_data_generator,
 )
 

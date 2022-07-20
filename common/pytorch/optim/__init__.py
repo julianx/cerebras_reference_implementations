@@ -12,5 +12,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from cerebras_reference_implementations.common.pytorch.optim.AdamW import AdamW
-from cerebras_reference_implementations.common.pytorch.optim.SGD import SGD
+from common.pytorch.optim.AdamW import AdamW
+from common.pytorch.optim.SGD import SGD

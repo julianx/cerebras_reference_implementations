@@ -14,20 +14,20 @@
 
 import logging
 
-from cerebras_reference_implementations.bert.pytorch.huggingface_common.modeling_bert import (
+from bert.pytorch.huggingface_common.modeling_bert import (
     BertConfig,
     BertForMaskedLM,
     BertForPreTraining,
 )
-from cerebras_reference_implementations.bert.pytorch.utils import (
+from bert.pytorch.utils import (
     check_unused_model_params,
     set_custom_stack_params,
 )
-from cerebras_reference_implementations.common.pytorch.metrics import (
+from common.pytorch.metrics import (
     AccuracyMetric,
     PerplexityMetric,
 )
-from cerebras_reference_implementations.common.pytorch.PyTorchBaseModel import (
+from common.pytorch.PyTorchBaseModel import (
     PyTorchBaseModel,
 )
 from torch.nn import CrossEntropyLoss

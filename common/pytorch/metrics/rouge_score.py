@@ -22,10 +22,10 @@ from typing import Optional
 
 import numpy as np
 import torch
-from cerebras_reference_implementations.bert.data_processing.Tokenization import (
+from bert.data_processing.Tokenization import (
     FullTokenizer,
 )
-from cerebras_reference_implementations.common.pytorch.metrics.cb_metric import (
+from common.pytorch.metrics.cb_metric import (
     CBMetric,
 )
 from nltk import ngrams

@@ -16,10 +16,10 @@ import os
 import random
 
 import spacy
-from cerebras_reference_implementations.bert.data_processing.Tokenization import (
+from bert.data_processing.Tokenization import (
     FullTokenizer,
 )
-from cerebras_reference_implementations.bert.data_processing.utils import (
+from bert.data_processing.utils import (
     convert_to_unicode,
     text_to_tokenized_documents,
 )

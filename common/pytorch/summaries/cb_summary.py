@@ -16,7 +16,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
-from cerebras_reference_implementations.common.pytorch import cb_model as cm
+from common.pytorch import cb_model as cm
 from torch.utils.tensorboard import SummaryWriter
 
 
